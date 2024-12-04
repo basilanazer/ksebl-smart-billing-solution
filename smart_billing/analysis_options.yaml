@@ -1,0 +1,5 @@
+analyzer:
+  errors:
+    avoid_print: ignore
+    prefer_typing_uninitialized_variables: ignore
+include: package:flutter_lints/flutter.yaml

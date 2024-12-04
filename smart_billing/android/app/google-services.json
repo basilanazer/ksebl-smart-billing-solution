@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "722998649522",
+    "project_id": "ksebl-smartbilling",
+    "storage_bucket": "ksebl-smartbilling.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:722998649522:android:6616df0e2dda604b965fab",
+        "android_client_info": {
+          "package_name": "com.example.smart_billing"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDlmjDTa59lICL8sZVjUN8D-1IDDqq1eOA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
