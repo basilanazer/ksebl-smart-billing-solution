@@ -16,7 +16,7 @@ class InputField extends StatefulWidget {
 
   const InputField({
     super.key,
-    required this.hintText,
+    this.hintText='',
     this.obscureChar = "●",
     this.isEnable = true,
     this.obscure = false,
