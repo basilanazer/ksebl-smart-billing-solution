@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_typing_uninitialized_variables
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:smart_billing/screens/analytics.dart';
 import 'package:smart_billing/screens/dashboard.dart';
 // import 'package:mediwise/firebase_options.dart';
 import 'package:flutter/material.dart';
@@ -29,36 +30,36 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Medicine Tracker and reminder',
+      debugShowCheckedModeBanner: false,
+      title: 'KSEBL Smart Billing Solution',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF4D4C7D)),
         useMaterial3: true,
-         scaffoldBackgroundColor: Colors.white, // Sets the background color of the Scaffold
-          appBarTheme: AppBarTheme(
-            backgroundColor: const Color(0xFF4D4C7D),
-            foregroundColor: Colors.white,
-          ),
+        scaffoldBackgroundColor:
+            Colors.white, // Sets the background color of the Scaffold
+        appBarTheme: AppBarTheme(
+          backgroundColor: const Color(0xFF4D4C7D),
+          foregroundColor: Colors.white,
+        ),
       ),
-      
       initialRoute: '/',
       routes: {
         '/': (context) => const SplashScreen(),
         '/home': (context) => const HomeScreen(),
         '/login': (context) => const Login(),
-        '/dashboard':(context) => const Dashboard(),
+        '/dashboard': (context) => const Dashboard(),
+        '/analytics': (context) => const Analytics(),
         // '/resetpas': (context)=> const ResetPassword()
       },
     );
   }
 }
+
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: email==null ? const Login() :
-      const Dashboard()
-    );
+    return Scaffold(body: email == null ? const Login() : const Dashboard());
   }
 }
