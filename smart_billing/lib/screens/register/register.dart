@@ -191,6 +191,10 @@ class RegisterState extends State<Register> {
       await docRef.set({
         'cons no' : consNumController.text
       }); 
+      DocumentReference regRef  = FirebaseFirestore.instance
+          .collection('registered')
+          .doc(consNumController.text.trim());
+      await regRef.set({'reg':'1'});
       // Save email to SharedPreferences
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('email', emailController.text.trim());
