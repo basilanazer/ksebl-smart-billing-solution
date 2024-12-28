@@ -1,101 +1,324 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:smart_billing/database/opn.dart';
-// import 'package:google_fonts/google_fonts.dart';
+// //import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:flutter/material.dart';
+// import 'package:smart_billing/model/logout.dart';
+// //import 'package:shared_preferences/shared_preferences.dart';
+// // import 'package:google_fonts/google_fonts.dart';
 
-class Dashboard extends StatelessWidget {
+// class Dashboard extends StatefulWidget {
+//   const Dashboard({super.key});
+
+//   @override
+//   State<Dashboard> createState() => _DashboardState();
+// }
+
+// class _DashboardState extends State<Dashboard> {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//         appBar: AppBar(
+//             actions: [
+//               IconButton(
+//                   onPressed: () {
+//                     logout(context);
+//                   },
+//                   icon: const Icon(
+//                     Icons.logout,
+//                     color: Color(0xFFFD7250),
+//                   )),
+//               IconButton(
+//                   onPressed: () {
+//                     Navigator.of(context).pushReplacementNamed('/analytics');
+//                   },
+//                   icon: const Icon(
+//                     Icons.line_axis,
+//                     color: Color(0xFFFD7250),
+//                   )),
+//               IconButton(
+//                   onPressed: () {},
+//                   icon: const Icon(
+//                     Icons.notifications_active_outlined,
+//                     color: Color(0xFFFD7250),
+//                   )),
+//               IconButton(
+//                   onPressed: () {},
+//                   icon: const Icon(
+//                     Icons.person_outline,
+//                     color: Color(0xFFFD7250),
+//                   ))
+//             ],
+//             title: const Text(
+//               'DashBoard',
+//               style: TextStyle(fontWeight: FontWeight.bold),
+//             )),
+//         body: SingleChildScrollView(
+//           child: Column(
+//             children: [
+//               const SizedBox(
+//                 height: 30,
+//               ),
+//               Center(
+//                 child: Image.asset(
+//                   'assets/icon.png',
+//                   width: 264,
+//                   height: 112,
+//                 ),
+//               ),
+//               Container(
+//                 margin: const EdgeInsets.all(30),
+//                 height: 100,
+//                 width: double.infinity,
+//                 decoration: BoxDecoration(
+//                   borderRadius: BorderRadius.circular(20),
+//                   color: const Color(0xFF4D4C7D),
+//                 ),
+//                 child: Row(
+//                   mainAxisAlignment: MainAxisAlignment.spaceAround,
+//                   children: [
+//                     const Icon(
+//                       Icons.qr_code_scanner,
+//                       color: Color(0xFFFD7250),
+//                       size: 48,
+//                     ),
+//                     TextButton(
+//                       onPressed: (){}, 
+//                       child: const Text(
+//                         "Capture Your Meter Now",
+//                         style: TextStyle(
+//                             fontSize: 20,
+//                             color: Colors.white,
+//                             fontWeight: FontWeight.bold),
+//                       ),
+//                     ),
+                    
+//                     const Icon(
+//                       Icons.arrow_forward,
+//                       color: Color(0xFFFD7250),
+//                     )
+//                   ],
+//                 ),
+//               ),
+//               Container(
+//                 margin: const EdgeInsets.all(30),
+//                 height: 100,
+//                 width: double.infinity,
+//                 decoration: BoxDecoration(
+//                   borderRadius: BorderRadius.circular(20),
+//                   color: const Color(0xFFFD7250),
+//                 ),
+//                 child: const Row(
+//                   mainAxisAlignment: MainAxisAlignment.spaceAround,
+//                   children: [
+//                     Icon(
+//                       Icons.note,
+//                       color: Colors.white,
+//                     ),
+//                     Text(
+//                       "Next Bill Due 11th November",
+//                       style: TextStyle(
+//                           fontSize: 20,
+//                           color: Color(0xFF4D4C7D),
+//                           fontWeight: FontWeight.bold),
+//                     ),
+//                   ],
+//                 ),
+//               ),
+//               const Align(
+//                 alignment: Alignment.topLeft,
+//                 child: Padding(
+//                   padding: EdgeInsets.only(left: 30),
+//                   child: Text(
+//                     "Last Month Analytics",
+//                     style: TextStyle(
+//                         color: Color(0xFF4D4C7D),
+//                         fontWeight: FontWeight.bold,
+//                         fontSize: 20),
+//                   ),
+//                 ),
+//               ),
+//               Container(
+//                 //height: 100,
+//                 margin: const EdgeInsets.all(30),
+//                 padding: const EdgeInsets.all(20),
+//                 decoration: BoxDecoration(
+//                   borderRadius: BorderRadius.circular(20),
+//                   color: const Color.fromARGB(255, 189, 188, 231),
+//                 ),
+//                 child: const Column(
+//                   mainAxisAlignment: MainAxisAlignment.spaceAround,
+//                   children: [
+//                     Row(
+//                       children: [
+//                         Text(
+//                           "Unit: ",
+//                           style: TextStyle(
+//                               color: Colors.white, fontWeight: FontWeight.bold),
+//                         ),
+//                         Text(
+//                           "235 KW",
+//                           style: TextStyle(
+//                               color: Color(0xFF4D4C7D),
+//                               fontWeight: FontWeight.bold,
+//                               fontSize: 20),
+//                         )
+//                       ],
+//                     ),
+//                     Row(
+//                       children: [
+//                         Text(
+//                           "Amount(Rs): ",
+//                           style: TextStyle(
+//                               color: Colors.white, fontWeight: FontWeight.bold),
+//                         ),
+//                         Text(
+//                           "1640.00",
+//                           style: TextStyle(
+//                               color: Color(0xFF4D4C7D),
+//                               fontWeight: FontWeight.bold,
+//                               fontSize: 20),
+//                         )
+//                       ],
+//                     ),
+//                   ],
+//                 ),
+//               ),
+//             ],
+//           ),
+//         ));
+//   }
+// }
+
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:smart_billing/model/logout.dart';
+
+class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
+
+  @override
+  State<Dashboard> createState() => _DashboardState();
+}
+
+class _DashboardState extends State<Dashboard> {
+  final ImagePicker _picker = ImagePicker();
+
+  // Function to open the camera
+  Future<void> _captureMeter() async {
+    try {
+      await _picker.pickImage(source: ImageSource.camera); // Opens the camera
+    } catch (e) {
+      // Handle any errors (e.g., user cancels or no permission)
+      print("Error opening camera: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-            actions: [
-              IconButton(
-                  onPressed: () {
-                    logout(context);
-                  },
-                  icon: Icon(
-                    Icons.logout,
-                    color: Color(0xFFFD7250),
-                  )),
-              IconButton(
-                  onPressed: () {
-                    Navigator.of(context).pushReplacementNamed('/analytics');
-                  },
-                  icon: Icon(
-                    Icons.line_axis,
-                    color: Color(0xFFFD7250),
-                  )),
-              IconButton(
-                  onPressed: () {},
-                  icon: Icon(
-                    Icons.notifications_active_outlined,
-                    color: Color(0xFFFD7250),
-                  )),
-              IconButton(
-                  onPressed: () {},
-                  icon: Icon(
-                    Icons.person_outline,
-                    color: Color(0xFFFD7250),
-                  ))
-            ],
-            title: const Text(
-              'DashBoard',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            )),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              SizedBox(
-                height: 30,
+      appBar: AppBar(
+        actions: [
+          //logout
+          IconButton(
+            onPressed: () {
+              logout(context);
+            },
+            icon: const Icon(
+              Icons.logout,
+              color: Color(0xFFFD7250),
+            ),
+          ),
+          //analytics
+          IconButton(
+            onPressed: () {
+              Navigator.of(context).pushNamed('/analytics');
+            },
+            icon: const Icon(
+              Icons.line_axis,
+              color: Color(0xFFFD7250),
+            ),
+          ),
+          //notifications
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(
+              Icons.notifications_active_outlined,
+              color: Color(0xFFFD7250),
+            ),
+          ),
+          //profile
+          IconButton(
+            onPressed: () {Navigator.of(context).pushNamed('/profile');},
+            icon: const Icon(
+              Icons.person_outline,
+              color: Color(0xFFFD7250),
+            ),
+          ),
+        ],
+        title: const Text(
+          'DashBoard'
+        ),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            const SizedBox(height: 30),
+            Center(
+              child: Image.asset(
+                'assets/icon.png',
+                width: 264,
+                height: 112,
               ),
-              Center(
-                child: Image.asset(
-                  'assets/icon.png',
-                  width: 264,
-                  height: 112,
-                ),
+            ),
+            Container(
+              margin: const EdgeInsets.all(30),
+              height: 100,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                color: const Color(0xFF4D4C7D),
               ),
-              Container(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Icon(
-                      Icons.qr_code_scanner,
-                      color: Color(0xFFFD7250),
-                    ),
-                    Text(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  const Icon(
+                    Icons.qr_code_scanner,
+                    color: Color(0xFFFD7250),
+                    size: 40,
+                  ),
+                  TextButton(
+                    onPressed: _captureMeter, // Opens the camera
+                    child: const Text(
                       "Capture Your Meter Now",
                       style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold),
+                        fontSize: 20,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                    Icon(
-                      Icons.arrow_forward,
-                      color: Color(0xFFFD7250),
-                    )
-                  ],
-                ),
-                margin: EdgeInsets.all(30),
+                  ),
+                  const Icon(
+                    Icons.arrow_forward,
+                    color: Color(0xFFFD7250),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+                margin: const EdgeInsets.all(30),
                 height: 100,
                 width: double.infinity,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
-                  color: Color(0xFF4D4C7D),
+                  color: const Color(0xFFFD7250),
                 ),
-              ),
-              Container(
-                child: Row(
+                child: const Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Icon(
-                      Icons.note,
+                      Icons.file_copy,
                       color: Colors.white,
+                      size: 40,
                     ),
-                    const Text(
+                    Text(
                       "Next Bill Due 11th November",
                       style: TextStyle(
                           fontSize: 20,
@@ -103,13 +326,6 @@ class Dashboard extends StatelessWidget {
                           fontWeight: FontWeight.bold),
                     ),
                   ],
-                ),
-                margin: const EdgeInsets.all(30),
-                height: 100,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: const Color(0xFFFD7250),
                 ),
               ),
               const Align(
@@ -126,10 +342,14 @@ class Dashboard extends StatelessWidget {
                 ),
               ),
               Container(
-                height: 100,
+                //height: 100,
                 margin: const EdgeInsets.all(30),
                 padding: const EdgeInsets.all(20),
-                child: Column(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: const Color.fromARGB(255, 189, 188, 231),
+                ),
+                child: const Column(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Row(
@@ -166,13 +386,11 @@ class Dashboard extends StatelessWidget {
                     ),
                   ],
                 ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: Color.fromARGB(255, 189, 188, 231),
-                ),
               ),
-            ],
-          ),
-        ));
+            // Your existing code continues...
+          ],
+        ),
+      ),
+    );
   }
 }

@@ -5,29 +5,31 @@
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+//import 'package:smart_billing/main.dart';
+import 'package:smart_billing/widgets/button.dart';
 import 'package:smart_billing/widgets/inputfield.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smart_billing/widgets/snackbar.dart';
 // import 'package:mediwise/register/reset_password.dart';
 
 
 
 
-class Login extends StatefulWidget{
-  const Login({super.key});
+class Register extends StatefulWidget{
+  const Register({super.key});
  
   @override
-  LoginState createState() => LoginState();
+  RegisterState createState() => RegisterState();
 }
 
 
-class LoginState extends State<Login> {
+class RegisterState extends State<Register> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confPasswordController = TextEditingController();
   final phnoController = TextEditingController();
   final consNumController = TextEditingController();
-  final userNameController = TextEditingController();
   final auth = FirebaseAuth.instance;
   bool isLoading = false;
   String msg="Some unknown error occured";
@@ -66,28 +68,21 @@ class LoginState extends State<Login> {
                     hintText: "enter your consumer number",
                     controller: consNumController,
                   ),
-                  const SizedBox(height: 8,),
-                  //username
-                  InputField(
-                    label: "Username",
-                    isEnable: false,
-                    controller: userNameController,
-                  ),
-                  const SizedBox(height: 8),
+                  //const SizedBox(height: 8,),
                   //email
                   InputField(
                     label: "Email",
                     hintText: "enter your email",
                     controller: emailController,
                   ),
-                  const SizedBox(height: 8),
+                  //const SizedBox(height: 8),
                   //phno
                   InputField(
                     label: "Phone Number",
                     hintText: "enter your phone number",
                     controller: phnoController,
                   ),
-                  const SizedBox(height: 8),
+                  //const SizedBox(height: 8),
                   //password
                   InputField(
                     label: "Password",
@@ -95,7 +90,7 @@ class LoginState extends State<Login> {
                     controller: passwordController,
                     obscure: true,
                   ),
-                  const SizedBox(height: 8),
+                  //const SizedBox(height: 8),
                   //confirm password
                   InputField(
                     label: "Confirm Password",
@@ -107,22 +102,12 @@ class LoginState extends State<Login> {
                     if (isLoading)
                       const CircularProgressIndicator()
                     else
-                    ElevatedButton(
-                      onPressed: (){_register(context);},
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor: const Color(0xFFFD7250), // Text color
-                        shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(10), // Corner radius
-                        ),
-                        minimumSize: const Size(320, 45), // Width and height
-                      ),
-                      child: const Text('REGISTER',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
-                    ),
+                    Buttons(label: "REGISTER", fn: (){_register(context);}),
                     const SizedBox(height: 10,),
                     TextButton(
-                      onPressed: (){},
+                      onPressed: (){
+                        Navigator.of(context).pushReplacementNamed('/login');
+                      },
                       child: const Text(
                         "Already Registered? Click Here to Login",
                         style: TextStyle(
@@ -141,50 +126,105 @@ class LoginState extends State<Login> {
     ),
     );
   }
-  Future<void> _register(context) async {
+  Future<void> _register(BuildContext context) async {
+    String errorMessage = '';
     setState(() {
       isLoading = true;
     });
+
     try {
-      final consumer = FirebaseFirestore.instance.collection('users').doc(consNumController.text);
-      final consumerDoc = await consumer.get();
-      if (!consumerDoc.exists) {
-        throw Exception("This consumer number doesnt exist");
+      // Validate input fields
+      if (consNumController.text.trim().isEmpty) {
+        errorMessage = "Consumer number is required.";
+        throw Exception();        
       }
-      userNameController.value = consumerDoc["name"];
-      if (passwordController.text!=confPasswordController.text) {
-        throw Exception("Password doesnt Match");
-      }      
-      await auth.createUserWithEmailAndPassword(email: emailController.text, password: passwordController.text);
-      await consumer.set({
-        "email" : emailController.text,
-        "phno" : phnoController.text,
+      if (emailController.text.trim().isEmpty) {
+        errorMessage = "Email is required.";
+        throw Exception();
+      }
+      if (phnoController.text.trim().isEmpty) {
+        errorMessage = "Phone number is required.";
+        throw Exception();
+      }
+      if (passwordController.text.isEmpty || confPasswordController.text.isEmpty) {
+        errorMessage = "Password and Confirm Password are required.";
+        throw Exception();
+      }
+      if (passwordController.text != confPasswordController.text) {
+        errorMessage="Passwords do not match.";
+        throw Exception();
+      }
+
+      // Check if the consumer exists in Firestore
+      final consumer = FirebaseFirestore.instance
+          .collection('consumer')
+          .doc(consNumController.text.trim());
+      final reg = FirebaseFirestore.instance
+          .collection('registered')
+          .doc(consNumController.text.trim());
+       DocumentReference docRef  = FirebaseFirestore.instance
+          .collection('consumer number')
+          .doc(emailController.text.trim());
+      final consumerDoc = await consumer.get();
+      final regDoc = await reg.get();
+
+      if (!consumerDoc.exists) {
+        errorMessage = "This consumer number does not exist in the database.";
+        throw Exception();
+      }
+      if (regDoc.exists) {
+        errorMessage = "This consumer number is already registered.";
+        throw Exception();
+      }
+
+      // Create a new user with Firebase Authentication
+      await auth.createUserWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      );
+
+      // Update Firestore with additional details
+      await consumer.update({
+        "email": emailController.text.trim(),
+        "phno": phnoController.text.trim(),
       });
-      //await auth.verifyPhoneNumber();
-      print("registered");
+      await docRef.set({
+        'cons no' : consNumController.text
+      }); 
       // Save email to SharedPreferences
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('email', emailController.text);
-      Navigator.of(context).pushReplacementNamed('/dashboard');
-    } catch (e){      
-      setState(() {
-        msg = e.toString();
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Colors.red[200],
-          content: Text(msg, style: const TextStyle(color: Colors.black),),
-          duration: const Duration(seconds: 3),
-        )
-      );
-    }
-    finally{
+      await prefs.setString('email', emailController.text.trim());
+
+      // Navigate to login page
+      Navigator.of(context).pushReplacementNamed('/login');
+      MySnackbar.show(context, "Successfully registered a new user.");
+    } on FirebaseAuthException catch (e) {
+      // Handle Firebase Authentication errors
+      
+      switch (e.code) {
+        case 'email-already-in-use':
+          errorMessage = "This email is already registered.";
+          break;
+        case 'invalid-email':
+          errorMessage = "The email address is not valid.";
+          break;
+        case 'weak-password':
+          errorMessage = "The password is too weak.";
+          break;
+        default:
+          errorMessage = "Error : ${e.code}";
+      }
+      MySnackbar.show(context, errorMessage);
+    } on Exception {
+      // Handle general errors
+      MySnackbar.show(context, errorMessage);
+    } finally {
       setState(() {
         isLoading = false;
       });
-     
     }
   }
+
 }
 
 

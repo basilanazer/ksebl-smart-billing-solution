@@ -5,8 +5,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:smart_billing/widgets/button.dart';
 import 'package:smart_billing/widgets/inputfield.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:smart_billing/widgets/snackbar.dart';
 // import 'package:mediwise/register/reset_password.dart';
 
 
@@ -60,7 +62,7 @@ class LoginState extends State<Login> {
                     hintText: "enter your email",
                     controller: emailController,
                   ),
-                  const SizedBox(height: 8),
+                  //const SizedBox(height: 8),
                   InputField(
                     label: "Password",
                     hintText: "enter your password",
@@ -85,41 +87,22 @@ class LoginState extends State<Login> {
                     if (isLoading)
                       const CircularProgressIndicator()
                     else
-                    ElevatedButton(
-                      onPressed: (){login(context);},
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor: const Color(0xFFFD7250), // Text color
-                        shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(10), // Corner radius
-                        ),
-                        minimumSize: const Size(320, 45), // Width and height
-                      ),
-                      child: const Text('LOGIN',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
+                    Buttons(
+                      fn: (){login(context);},
+                      label : 'LOGIN',                      
                     ),             
                     const SizedBox(height: 15,),
-
-                    ElevatedButton(
-                      onPressed: (){},
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: const Color(0xFFFD7250), 
-                        backgroundColor: Colors.white, // Text color
-                        shape: RoundedRectangleBorder(                    
-                          borderRadius: BorderRadius.circular(10), // Corner radius
-                          side: const BorderSide(
-                            color: Color(0xFFFD7250), // Border color
-                            width: 2,                // Border width
-                          ),
-                        ),
-                        minimumSize: const Size(320, 50), // Width and height
-                      ),
-                      child: const Text('Login with phone instead'),
-                    ),  
-                  
+                    Buttons(
+                      label : 'Login with phone instead',
+                      fn : (){},
+                      color: const Color(0xFFFD7250),
+                      bgcolor: Colors.white,
+                    ),
                     const SizedBox(height: 10,),
                     TextButton(
-                      onPressed: (){},
+                      onPressed: (){
+                        Navigator.of(context).pushReplacementNamed('/register');
+                      },
                       child: const Text(
                         "New Here? Click Here to Register",
                         style: TextStyle(
@@ -129,7 +112,7 @@ class LoginState extends State<Login> {
                         ),
                       )
                     ),
-                    const SizedBox(height: 95,)                
+                    const SizedBox(height: 70,)                
                 ],
               ),
             ),
@@ -156,13 +139,14 @@ class LoginState extends State<Login> {
       setState(() {
         msg = "Incorrect email or password";
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Colors.red[200],
-          content: Text(msg, style: const TextStyle(color: Colors.black),),
-          duration: const Duration(seconds: 3),
-        )
-      );
+      MySnackbar.show(context,msg);
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(
+      //     backgroundColor: Colors.red[200],
+      //     content: Text(msg, style: const TextStyle(color: Colors.black),),
+      //     duration: const Duration(seconds: 3),
+      //   )
+      // );
       print(e.message);
     }
     catch (e){      

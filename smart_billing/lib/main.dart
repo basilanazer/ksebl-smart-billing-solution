@@ -1,12 +1,14 @@
 // ignore_for_file: prefer_typing_uninitialized_variables
 
 import 'package:firebase_core/firebase_core.dart';
-import 'package:smart_billing/screens/analytics.dart';
+import 'package:smart_billing/screens/appbar/analytics.dart';
+import 'package:smart_billing/screens/appbar/profile.dart';
 import 'package:smart_billing/screens/dashboard.dart';
 // import 'package:mediwise/firebase_options.dart';
 import 'package:flutter/material.dart';
 // import 'package:mediwise/home_screen.dart';
-import 'package:smart_billing/screens/register/login_email.dart';
+import 'package:smart_billing/screens/login_email.dart';
+import 'package:smart_billing/screens/register/register.dart';
 //import 'package:mediwise/register/reset_password.dart';
 import 'package:smart_billing/screens/splashscreen/splash_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -37,9 +39,13 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         scaffoldBackgroundColor:
             Colors.white, // Sets the background color of the Scaffold
-        appBarTheme: AppBarTheme(
-          backgroundColor: const Color(0xFF4D4C7D),
-          foregroundColor: Colors.white,
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFF4D4C7D),
+          foregroundColor: Color(0xFFFD7250),
+          titleTextStyle: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          )
         ),
       ),
       initialRoute: '/',
@@ -49,6 +55,8 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const Login(),
         '/dashboard': (context) => const Dashboard(),
         '/analytics': (context) => const Analytics(),
+        '/register': (context) => const Register(),
+        '/profile' : (context) => const Profile(),
         // '/resetpas': (context)=> const ResetPassword()
       },
     );

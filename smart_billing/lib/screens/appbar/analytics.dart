@@ -1,8 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
+//import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+//import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:smart_billing/database/opn.dart';
+//import 'package:smart_billing/model/opn.dart';
 
 class Analytics extends StatelessWidget {
   const Analytics({super.key});
@@ -11,39 +11,38 @@ class Analytics extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          actions: [
-            IconButton(
-                onPressed: () {
-                  logout(context);
-                },
-                icon: Icon(
-                  Icons.logout,
-                  color: Color(0xFFFD7250),
-                )),
-            IconButton(
-                onPressed: () {
-                  Navigator.of(context).pushReplacementNamed('/analytics');
-                },
-                icon: Icon(
-                  Icons.dashboard_outlined,
-                  color: Color(0xFFFD7250),
-                )),
-            IconButton(
-                onPressed: () {},
-                icon: Icon(
-                  Icons.notifications_active_outlined,
-                  color: Color(0xFFFD7250),
-                )),
-            IconButton(
-                onPressed: () {},
-                icon: Icon(
-                  Icons.person_outline,
-                  color: Color(0xFFFD7250),
-                ))
-          ],
+          // actions: [
+          //   IconButton(
+          //       onPressed: () {
+          //         logout(context);
+          //       },
+          //       icon: const Icon(
+          //         Icons.logout,
+          //         color: Color(0xFFFD7250),
+          //       )),
+          //   IconButton(
+          //       onPressed: () {
+          //         Navigator.of(context).pushReplacementNamed('/analytics');
+          //       },
+          //       icon: const Icon(
+          //         Icons.dashboard_outlined,
+          //         color: Color(0xFFFD7250),
+          //       )),
+          //   IconButton(
+          //       onPressed: () {},
+          //       icon: const Icon(
+          //         Icons.notifications_active_outlined,
+          //         color: Color(0xFFFD7250),
+          //       )),
+          //   IconButton(
+          //       onPressed: () {},
+          //       icon: const Icon(
+          //         Icons.person_outline,
+          //         color: Color(0xFFFD7250),
+          //       ))
+          // ],
           title: const Text(
             'Analytics',
-            style: TextStyle(fontWeight: FontWeight.bold),
           )),
       body: Center(
         // child:
@@ -62,7 +61,7 @@ class Analytics extends StatelessWidget {
                       FlSpot(4, 8),
                       FlSpot(3, 3),
                     ],
-                    gradient: LinearGradient(
+                    gradient: const LinearGradient(
                         colors: [Color(0xFF4D4C7D), Color(0xFFFD7250)]))
               ])),
             )

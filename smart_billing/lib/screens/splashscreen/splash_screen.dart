@@ -29,9 +29,9 @@ class SplashScreenState extends State<SplashScreen> {
           children: <Widget>[
             Image.asset('assets/icon.png',width: 264, height: 112,),
             const SizedBox(height: 40),
-            Container(
+            const SizedBox(
               width: 200,
-              child: const LinearProgressIndicator(color: Colors.white,minHeight: 25,semanticsValue: "loading...",borderRadius: BorderRadius.all(Radius.circular(15)),),
+              child: LinearProgressIndicator(color: Colors.white,minHeight: 25,semanticsValue: "loading...",borderRadius: BorderRadius.all(Radius.circular(15)),),
             )
             
             //const CircularProgressIndicator(color: Colors.white,),

@@ -21,7 +21,7 @@ class InputField extends StatefulWidget {
     this.isEnable = true,
     this.obscure = false,
     this.controller,
-    this.label = ''
+    this.label = '',
   });
 
 
@@ -38,7 +38,7 @@ class _InputFieldState extends State<InputField> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
