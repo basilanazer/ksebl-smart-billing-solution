@@ -1,128 +1,197 @@
-//import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:math';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 //import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fl_chart/fl_chart.dart';
-//import 'package:smart_billing/model/opn.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class Analytics extends StatelessWidget {
+class Analytics extends StatefulWidget {
   const Analytics({super.key});
+
+  @override
+  State<Analytics> createState() => _AnalyticsState();
+}
+
+class _AnalyticsState extends State<Analytics> {
+  List<FlSpot> unitSpots = [];
+  List<FlSpot> priceSpots = [];
+  Map<double, String> xLabels = {};
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
+  Future<void> fetchData() async {
+    try {
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('1112345671234')
+          .orderBy(FieldPath.documentId)
+          .get();
+
+      final docs = querySnapshot.docs;
+      List<Map<String, dynamic>> parsedData = docs.map((doc) {
+        final idParts = doc.id.split('-');
+        final year = int.parse(idParts[0]);
+        final month = int.parse(idParts[1]);
+        final units = double.parse(doc['u']);
+        final price = double.parse(doc['p']); // Fetch 'p' for prices
+        return {
+          'date': DateTime(year, month + 1),
+          'units': units,
+          'price': price,
+        };
+      }).toList();
+
+      parsedData.sort((a, b) => a['date'].compareTo(b['date']));
+      final latest6Months = parsedData.take(6).toList();
+
+      List<FlSpot> chartUnitSpots = [];
+      List<FlSpot> chartPriceSpots = [];
+      Map<double, String> labels = {};
+
+      for (int i = 0; i < latest6Months.length; i++) {
+        chartUnitSpots.add(FlSpot(i.toDouble(), latest6Months[i]['units']));
+        chartPriceSpots.add(FlSpot(i.toDouble(), latest6Months[i]['price']));
+        labels[i.toDouble()] =
+            "${latest6Months[i]['date'].month}/${latest6Months[i]['date'].year}";
+      }
+
+      setState(() {
+        unitSpots = chartUnitSpots;
+        priceSpots = chartPriceSpots;
+        xLabels = labels;
+        isLoading = false;
+      });
+    } catch (e) {
+      print("Error fetching data: $e");
+    }
+  }
+
+  Widget buildChart(BuildContext context, String yAxisTitle,
+      List<FlSpot> chartSpots, Map<double, String> labels) {
+    String? dxn = yAxisTitle == "Units" ? "left" : "right";
+    String? next = yAxisTitle == "Units" ? "Price" : "Units";
+    return SingleChildScrollView(
+      scrollDirection: Axis.vertical,
+      child: Column(
+        children: [
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.5,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 5.0, right: 25, bottom: 30),
+              child: LineChart(
+                LineChartData(
+                  minY: 0,
+                  maxY: calculateMaxY(chartSpots),
+                  lineBarsData: [
+                    LineChartBarData(
+                      spots: chartSpots,
+                      gradient: LinearGradient(
+                        colors: [Color(0xFF4D4C7D), Color(0xFFFD7250)],
+                      ),
+                    ),
+                  ],
+                  titlesData: FlTitlesData(
+                      bottomTitles: AxisTitles(
+                        axisNameWidget: Text(
+                          'Month/Year',
+                          style: TextStyle(
+                              fontSize: 12, fontWeight: FontWeight.bold),
+                        ),
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          getTitlesWidget: (value, meta) {
+                            return Text(
+                              labels[value] ?? '',
+                              style: const TextStyle(fontSize: 13),
+                            );
+                          },
+                          reservedSize: 30,
+                        ),
+                      ),
+                      topTitles: AxisTitles(
+                        sideTitles: SideTitles(showTitles: false),
+                      ),
+                      rightTitles: AxisTitles(
+                        sideTitles: SideTitles(showTitles: false),
+                      ),
+                      leftTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            reservedSize: 50,
+                            showTitles: true,
+                          ),
+                          axisNameWidget: RotatedBox(
+                            quarterTurns: 2,
+                            child: Text(
+                              yAxisTitle,
+                              style: TextStyle(
+                                  fontSize: 12, fontWeight: FontWeight.bold),
+                            ),
+                          ))),
+                ),
+              ),
+            ),
+          ),
+          Text(yAxisTitle + " vs Month/Year",
+              style: TextStyle(
+                  color: Color(0xFFFD7250),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20)),
+          SizedBox(
+            height: 20,
+          ),
+          Text("Swipe " + dxn + " to Analyse",
+              style: TextStyle(
+                  color: Color(0xFF4D4C7D),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20)),
+          Text(next + " vs Month/Year",
+              style: TextStyle(
+                  color: Color(0xFF4D4C7D),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15))
+        ],
+      ),
+    );
+  }
+
+  double calculateMaxY(List<FlSpot> spots) {
+    double maxY = spots.map((spot) => spot.y).reduce((a, b) => a > b ? a : b);
+    // int val = maxY.toString().replaceAll('.', '').length;
+    double nextval = pow(10, 2) * 5 + maxY;
+    return nextval;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          // actions: [
-          //   IconButton(
-          //       onPressed: () {
-          //         logout(context);
-          //       },
-          //       icon: const Icon(
-          //         Icons.logout,
-          //         color: Color(0xFFFD7250),
-          //       )),
-          //   IconButton(
-          //       onPressed: () {
-          //         Navigator.of(context).pushReplacementNamed('/analytics');
-          //       },
-          //       icon: const Icon(
-          //         Icons.dashboard_outlined,
-          //         color: Color(0xFFFD7250),
-          //       )),
-          //   IconButton(
-          //       onPressed: () {},
-          //       icon: const Icon(
-          //         Icons.notifications_active_outlined,
-          //         color: Color(0xFFFD7250),
-          //       )),
-          //   IconButton(
-          //       onPressed: () {},
-          //       icon: const Icon(
-          //         Icons.person_outline,
-          //         color: Color(0xFFFD7250),
-          //       ))
-          // ],
-          title: const Text(
-            'Analytics',
-          )),
-      body: Center(
-        // child:
-        child: Column(
-          children: [
-            AspectRatio(
-              aspectRatio: 2.0,
-              child: LineChart(LineChartData(lineBarsData: [
-                LineChartBarData(
-                    show: true,
-                    spots: const [
-                      FlSpot(0, 0),
-                      FlSpot(2, 3),
-                      FlSpot(1, 0),
-                      FlSpot(5, 2),
-                      FlSpot(4, 8),
-                      FlSpot(3, 3),
-                    ],
-                    gradient: const LinearGradient(
-                        colors: [Color(0xFF4D4C7D), Color(0xFFFD7250)]))
-              ])),
-            )
-          ],
-        ),
+        actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.of(context).pushReplacementNamed('/dashboard');
+              },
+              icon: Icon(Icons.dashboard_outlined, color: Color(0xFFFD7250))),
+        ],
+        title: const Text('Analytics',
+            style: TextStyle(fontWeight: FontWeight.bold)),
       ),
-      // ),
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : PageView(
+              children: [
+                Center(
+                  child: buildChart(context, 'Units', unitSpots, xLabels),
+                ), // Units vs Months
+                Center(
+                  child: buildChart(context, 'Price', priceSpots, xLabels),
+                ), // Price vs Months
+              ],
+            ),
     );
   }
 }
-
-// import 'package:fl_chart/fl_chart.dart';
-// import 'package:flutter/material.dart';
-
-// class LineChartExample extends StatelessWidget {
-//   final List<Map<String, dynamic>> data = [
-//     {'month': 'Aug', 'value': 5.0},
-//     {'month': 'Sep', 'value': 3.0},
-//     {'month': 'Oct', 'value': 8.0},
-//     {'month': 'Nov', 'value': 6.0},
-//     {'month': 'Dec', 'value': 2.0},
-//     {'month': 'Jan', 'value': 7.0},
-//   ]; // Replace this with your database data
-
-//   @override
-//   Widget build(BuildContext context) {
-//     // Map months dynamically to x-axis indices
-//     final monthMap = {for (var i = 0; i < data.length; i++) i.toDouble(): data[i]['month']};
-
-//     return LineChart(
-//       LineChartData(
-//         lineBarsData: [
-//           LineChartBarData(
-//             spots: data.asMap().entries.map((entry) {
-//               return FlSpot(entry.key.toDouble(), entry.value['value']);
-//             }).toList(),
-//             gradient: LinearGradient(
-//               colors: [Color(0xFF4D4C7D), Color(0xFFFD7250)],
-//             ),
-//           ),
-//         ],
-//         titlesData: FlTitlesData(
-//           bottomTitles: AxisTitles(
-//             sideTitles: SideTitles(
-//               showTitles: true,
-//               getTitlesWidget: (value, meta) {
-//                 final month = monthMap[value];
-//                 return Text(month ?? '', style: const TextStyle(fontSize: 10));
-//               },
-//               reservedSize: 30,
-//             ),
-//           ),
-//           leftTitles: AxisTitles(
-//             sideTitles: SideTitles(
-//               showTitles: true,
-//             ),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-// https://chatgpt.com/share/6759b792-d02c-800e-89f7-7ceb233cd99e
