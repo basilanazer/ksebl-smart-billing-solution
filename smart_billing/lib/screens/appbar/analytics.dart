@@ -1,10 +1,8 @@
 import 'dart:math';
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-//import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Analytics extends StatefulWidget {
   const Analytics({super.key});
@@ -26,9 +24,32 @@ class _AnalyticsState extends State<Analytics> {
   }
 
   Future<void> fetchData() async {
+    String msg = 'Some error occured';
     try {
+      final prefs = await SharedPreferences.getInstance();
+      final email = prefs.getString('email');
+      if (email == null || email.isEmpty) {
+        msg = "Email not found in SharedPreferences.";
+        throw Exception();
+      }
+
+      // Fetch consumer number from consumer_number collection
+      final consumerNumberDoc = await FirebaseFirestore.instance
+          .collection('consumer number')
+          .doc(email)
+          .get();
+      if (!consumerNumberDoc.exists) {
+        msg = "Consumer number not found for the given email.";
+        throw Exception();
+      }
+
+      final consumerNumber = consumerNumberDoc.data()?['cons no'];
+      if (consumerNumber == null || consumerNumber.isEmpty) {
+        msg = "Consumer number is empty or invalid.";
+        throw Exception();
+      }
       final querySnapshot = await FirebaseFirestore.instance
-          .collection('1112345671234')
+          .collection(consumerNumber)
           .orderBy(FieldPath.documentId)
           .get();
 
@@ -37,17 +58,18 @@ class _AnalyticsState extends State<Analytics> {
         final idParts = doc.id.split('-');
         final year = int.parse(idParts[0]);
         final month = int.parse(idParts[1]);
-        final units = double.parse(doc['u']);
-        final price = double.parse(doc['p']); // Fetch 'p' for prices
+        final units = double.parse(doc['Units Consumed']);
+        final price = double.parse(doc['Amount Payable']);
         return {
-          'date': DateTime(year, month + 1),
+          'date': DateTime(year, month),
           'units': units,
           'price': price,
         };
       }).toList();
 
       parsedData.sort((a, b) => a['date'].compareTo(b['date']));
-      final latest6Months = parsedData.take(6).toList();
+      final latest6Months =
+          parsedData.reversed.take(6).toList().reversed.toList();
 
       List<FlSpot> chartUnitSpots = [];
       List<FlSpot> chartPriceSpots = [];
@@ -132,6 +154,19 @@ class _AnalyticsState extends State<Analytics> {
                                   fontSize: 12, fontWeight: FontWeight.bold),
                             ),
                           ))),
+                  lineTouchData:
+                      LineTouchData(touchTooltipData: LineTouchTooltipData(
+                    getTooltipItems: (touchedSpots) {
+                      return touchedSpots.map((LineBarSpot touchedSpot) {
+                        final textStyle = TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        );
+                        return LineTooltipItem(
+                            touchedSpot.y.toString(), textStyle);
+                      }).toList();
+                    },
+                  )),
                 ),
               ),
             ),
@@ -162,8 +197,8 @@ class _AnalyticsState extends State<Analytics> {
   double calculateMaxY(List<FlSpot> spots) {
     double maxY = spots.map((spot) => spot.y).reduce((a, b) => a > b ? a : b);
     // int val = maxY.toString().replaceAll('.', '').length;
-    double nextval = pow(10, 2) * 5 + maxY;
-    return nextval;
+    // double nextval = pow(10, 2) * 5 + maxY;
+    return maxY;
   }
 
   @override
@@ -178,7 +213,7 @@ class _AnalyticsState extends State<Analytics> {
               icon: Icon(Icons.dashboard_outlined, color: Color(0xFFFD7250))),
         ],
         title: const Text('Analytics',
-            style: TextStyle(fontWeight: FontWeight.bold)),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
       ),
       body: isLoading
           ? Center(child: CircularProgressIndicator())
