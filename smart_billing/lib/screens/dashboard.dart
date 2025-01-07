@@ -80,7 +80,7 @@
 //                       size: 48,
 //                     ),
 //                     TextButton(
-//                       onPressed: (){}, 
+//                       onPressed: (){},
 //                       child: const Text(
 //                         "Capture Your Meter Now",
 //                         style: TextStyle(
@@ -89,7 +89,7 @@
 //                             fontWeight: FontWeight.bold),
 //                       ),
 //                     ),
-                    
+
 //                     const Icon(
 //                       Icons.arrow_forward,
 //                       color: Color(0xFFFD7250),
@@ -187,6 +187,7 @@
 //   }
 // }
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:smart_billing/model/logout.dart';
@@ -211,8 +212,24 @@ class _DashboardState extends State<Dashboard> {
     }
   }
 
+  Future addItems(Map<String, dynamic> dets, String id) async {
+    return await FirebaseFirestore.instance
+        .collection("1112345671234")
+        .doc(id)
+        .set(dets);
+  }
+
   @override
   Widget build(BuildContext context) {
+    //USE THIS PART TO ADD DUMMY VALUES
+    // addItems({
+    //   "Bill Date": "06.10.2020",
+    //   "Current Reading": "22255",
+    //   "Previous Reading": "22176",
+    //   "Units Consumed": "79",
+    //   "Amount Payable": "454",
+    // }, "2020-10");
+
     return Scaffold(
       appBar: AppBar(
         actions: [
@@ -246,16 +263,17 @@ class _DashboardState extends State<Dashboard> {
           ),
           //profile
           IconButton(
-            onPressed: () {Navigator.of(context).pushNamed('/profile');},
+            onPressed: () {
+              Navigator.of(context).pushNamed('/profile');
+            },
             icon: const Icon(
               Icons.person_outline,
               color: Color(0xFFFD7250),
             ),
           ),
         ],
-        title: const Text(
-          'DashBoard'
-        ),
+        title: const Text('DashBoard',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -303,90 +321,90 @@ class _DashboardState extends State<Dashboard> {
               ),
             ),
             Container(
-                margin: const EdgeInsets.all(30),
-                height: 100,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: const Color(0xFFFD7250),
-                ),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Icon(
-                      Icons.file_copy,
-                      color: Colors.white,
-                      size: 40,
-                    ),
-                    Text(
-                      "Next Bill Due 11th November",
-                      style: TextStyle(
-                          fontSize: 20,
-                          color: Color(0xFF4D4C7D),
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
+              margin: const EdgeInsets.all(30),
+              height: 100,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                color: const Color(0xFFFD7250),
               ),
-              const Align(
-                alignment: Alignment.topLeft,
-                child: Padding(
-                  padding: EdgeInsets.only(left: 30),
-                  child: Text(
-                    "Last Month Analytics",
-                    style: TextStyle(
-                        color: Color(0xFF4D4C7D),
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Icon(
+                    Icons.file_copy,
+                    color: Colors.white,
+                    size: 40,
                   ),
+                  Text(
+                    "Next Bill Due 11th November",
+                    style: TextStyle(
+                        fontSize: 20,
+                        color: Color(0xFF4D4C7D),
+                        fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+            ),
+            const Align(
+              alignment: Alignment.topLeft,
+              child: Padding(
+                padding: EdgeInsets.only(left: 30),
+                child: Text(
+                  "Last Month Analytics",
+                  style: TextStyle(
+                      color: Color(0xFF4D4C7D),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20),
                 ),
               ),
-              Container(
-                //height: 100,
-                margin: const EdgeInsets.all(30),
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: const Color.fromARGB(255, 189, 188, 231),
-                ),
-                child: const Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          "Unit: ",
-                          style: TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.bold),
-                        ),
-                        Text(
-                          "235 KW",
-                          style: TextStyle(
-                              color: Color(0xFF4D4C7D),
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20),
-                        )
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          "Amount(Rs): ",
-                          style: TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.bold),
-                        ),
-                        Text(
-                          "1640.00",
-                          style: TextStyle(
-                              color: Color(0xFF4D4C7D),
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20),
-                        )
-                      ],
-                    ),
-                  ],
-                ),
+            ),
+            Container(
+              //height: 100,
+              margin: const EdgeInsets.all(30),
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                color: const Color.fromARGB(255, 189, 188, 231),
               ),
+              child: const Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        "Unit: ",
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        "235 KW",
+                        style: TextStyle(
+                            color: Color(0xFF4D4C7D),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20),
+                      )
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Text(
+                        "Amount(Rs): ",
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        "1640.00",
+                        style: TextStyle(
+                            color: Color(0xFF4D4C7D),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20),
+                      )
+                    ],
+                  ),
+                ],
+              ),
+            ),
             // Your existing code continues...
           ],
         ),
