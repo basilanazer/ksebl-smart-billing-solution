@@ -8,6 +8,7 @@ import 'package:smart_billing/screens/dashboard.dart';
 import 'package:flutter/material.dart';
 // import 'package:mediwise/home_screen.dart';
 import 'package:smart_billing/screens/login_email.dart';
+import 'package:smart_billing/screens/ocr/capture_part.dart';
 import 'package:smart_billing/screens/register/register.dart';
 //import 'package:mediwise/register/reset_password.dart';
 import 'package:smart_billing/screens/splashscreen/splash_screen.dart';
@@ -40,13 +41,12 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor:
             Colors.white, // Sets the background color of the Scaffold
         appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFF4D4C7D),
-          foregroundColor: Color(0xFFFD7250),
-          titleTextStyle: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          )
-        ),
+            backgroundColor: Color(0xFF4D4C7D),
+            foregroundColor: Color(0xFFFD7250),
+            titleTextStyle: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            )),
       ),
       initialRoute: '/',
       routes: {
@@ -56,7 +56,8 @@ class MyApp extends StatelessWidget {
         '/dashboard': (context) => const Dashboard(),
         '/analytics': (context) => const Analytics(),
         '/register': (context) => const Register(),
-        '/profile' : (context) => const Profile(),
+        '/profile': (context) => const Profile(),
+        '/capture': (context) => ImageCapture(),
         // '/resetpas': (context)=> const ResetPassword()
       },
     );

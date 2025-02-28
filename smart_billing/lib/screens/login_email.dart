@@ -22,109 +22,111 @@ class LoginState extends State<Login> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF4D4C7D),
-      body: SingleChildScrollView(
-          child: Padding(
-              padding: const EdgeInsets.all(30),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20), // Corner radius
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const SizedBox(
-                        height: 60,
-                      ),
-                      Image.asset(
-                        'assets/icon.png',
-                        width: 264,
-                        height: 112,
-                      ),
-                      const SizedBox(
-                        height: 40,
-                      ),
-                      const Text(
-                        "LOGIN",
-                        style: TextStyle(
-                          color: Color(0xFF4D4C7D),
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
+      body: SafeArea(
+        child: SingleChildScrollView(
+            child: Padding(
+                padding: const EdgeInsets.all(30),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20), // Corner radius
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SizedBox(
+                          height: 30,
                         ),
-                      ),
-                      const SizedBox(
-                        height: 30,
-                      ),
-                      InputField(
-                        label: "E-mail",
-                        hintText: "enter your email",
-                        controller: emailController,
-                      ),
-                      //const SizedBox(height: 8),
-                      InputField(
-                        label: "Password",
-                        hintText: "enter your password",
-                        controller: passwordController,
-                        obscure: true,
-                      ),
-                      const SizedBox(height: 8),
-                      TextButton(
-                        onPressed: () {
-                          //Navigator.of(context).pushNamed('/resetpas');
-                        },
-                        child: const Text(
-                          "Forgot Password?",
-                          style: TextStyle(
-                            color: Color(0xFF4D4C7D),
-                            decoration: TextDecoration.underline,
-                            decorationColor: Color(0xFF4D4C7D),
-                          ),
+                        Image.asset(
+                          'assets/icon.png',
+                          width: 264,
+                          height: 112,
                         ),
-                      ),
-                      const SizedBox(height: 24.0),
-                      if (isLoading)
-                        const CircularProgressIndicator()
-                      else
-                        Buttons(
-                          fn: () {
-                            login(context);
-                          },
-                          label: 'LOGIN',
+                        const SizedBox(
+                          height: 20,
                         ),
-                      const SizedBox(
-                        height: 15,
-                      ),
-                      Buttons(
-                        label: 'Login with phone instead',
-                        fn: () {},
-                        color: const Color(0xFFFD7250),
-                        bgcolor: Colors.white,
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      TextButton(
+                        // const Text(
+                        //   "LOGIN",
+                        //   style: TextStyle(
+                        //     color: Color(0xFF4D4C7D),
+                        //     fontSize: 32,
+                        //     fontWeight: FontWeight.bold,
+                        //   ),
+                        // ),
+                        const SizedBox(
+                          height: 30,
+                        ),
+                        InputField(
+                          label: "E-mail",
+                          hintText: "Enter your email",
+                          controller: emailController,
+                        ),
+                        //const SizedBox(height: 8),
+                        InputField(
+                          label: "Password",
+                          hintText: "Enter your password",
+                          controller: passwordController,
+                          obscure: true,
+                        ),
+                        const SizedBox(height: 8),
+                        TextButton(
                           onPressed: () {
-                            Navigator.of(context)
-                                .pushReplacementNamed('/register');
+                            //Navigator.of(context).pushNamed('/resetpas');
                           },
                           child: const Text(
-                            "New Here? Click Here to Register",
+                            "Forgot Password?",
                             style: TextStyle(
                               color: Color(0xFF4D4C7D),
                               decoration: TextDecoration.underline,
                               decorationColor: Color(0xFF4D4C7D),
                             ),
-                          )),
-                      const SizedBox(
-                        height: 70,
-                      )
-                    ],
+                          ),
+                        ),
+                        const SizedBox(height: 24.0),
+                        if (isLoading)
+                          const CircularProgressIndicator()
+                        else
+                          Buttons(
+                            fn: () {
+                              login(context);
+                            },
+                            label: 'Login',
+                          ),
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        Buttons(
+                          label: 'Login with phone instead',
+                          fn: () {},
+                          color: const Color(0xFFFD7250),
+                          bgcolor: Colors.white,
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        TextButton(
+                            onPressed: () {
+                              Navigator.of(context)
+                                  .pushReplacementNamed('/register');
+                            },
+                            child: const Text(
+                              "New Here? Click Here to Register",
+                              style: TextStyle(
+                                color: Color(0xFF4D4C7D),
+                                decoration: TextDecoration.underline,
+                                decorationColor: Color(0xFF4D4C7D),
+                              ),
+                            )),
+                        const SizedBox(
+                          height: 20,
+                        )
+                      ],
+                    ),
                   ),
-                ),
-              ))),
+                ))),
+      ),
     );
   }
 
