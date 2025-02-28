@@ -46,7 +46,7 @@ class ForgotPasswordPageState extends State<ForgotPasswordPage> {
                         "TROUBLE LOGGING IN ?",
                         style: TextStyle(
                           color: Color(0xFF4D4C7D),
-                          fontSize: 32,
+                          fontSize: 28,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -54,7 +54,7 @@ class ForgotPasswordPageState extends State<ForgotPasswordPage> {
                         height: 20,
                       ),
                       const Text(
-                        "Enter your email and we will send you a link to reset your password ?",                         
+                        "Enter your email and we will send you a link to reset your password ",                         
                       ),
                       const SizedBox(
                         height: 30,
@@ -76,7 +76,7 @@ class ForgotPasswordPageState extends State<ForgotPasswordPage> {
                           },
                           label: 'Reset Password',
                         ),
-                        const SizedBox(height: 220,)
+                        const SizedBox(height: 230,)
                     ]
                   )
                 )

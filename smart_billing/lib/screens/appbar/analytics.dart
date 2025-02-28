@@ -26,7 +26,7 @@ class _AnalyticsState extends State<Analytics> {
 
   Future<void> fetchData() async {
     String msg = 'Some error occured';
-    try {
+    try {      
       final prefs = await SharedPreferences.getInstance();
       final email = prefs.getString('email');
       if (email == null || email.isEmpty) {
