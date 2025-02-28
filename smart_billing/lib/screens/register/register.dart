@@ -35,7 +35,46 @@ class RegisterState extends State<Register> {
   String msg="Some unknown error occured";
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return SafeArea(
+        child: WillPopScope(
+      onWillPop: () async {
+        // Show exit confirmation dialog
+        bool exit = await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            //backgroundColor: Colors.amber[50],
+            title: const Text("Exit"),
+            content: const Text('Are you sure you want to exit?',),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  // Close the dialog and return true
+                  Navigator.of(context).pop(true);
+                },
+                child: const Text(
+                  'Yes',
+                  style: TextStyle(color: Color(0xFF4D4C7D), fontWeight: FontWeight.bold),
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  // Close the dialog and return false
+                  Navigator.of(context).pop(false);
+                },
+                child: const Text(
+                  'No',
+                  style: TextStyle(color: Color(0xFFFD7250), fontWeight: FontWeight.bold),
+                ),
+              ),
+              
+            ],
+          ),
+        );
+
+        // Return exit if user confirmed, otherwise don't exit
+        return exit;
+      },
+      child: Scaffold(
       backgroundColor: const Color(0xFF4D4C7D),
       body: SingleChildScrollView(
         child: Padding(
@@ -123,7 +162,9 @@ class RegisterState extends State<Register> {
             ),
           )
         )
-    ),
+      ),
+      )
+        )
     );
   }
   Future<void> _register(BuildContext context) async {
@@ -159,12 +200,15 @@ class RegisterState extends State<Register> {
       final consumer = FirebaseFirestore.instance
           .collection('consumer')
           .doc(consNumController.text.trim());
+      
       final reg = FirebaseFirestore.instance
           .collection('registered')
           .doc(consNumController.text.trim());
-       DocumentReference docRef  = FirebaseFirestore.instance
+       
+       DocumentReference consumerno  = FirebaseFirestore.instance
           .collection('consumer number')
           .doc(emailController.text.trim());
+      
       final consumerDoc = await consumer.get();
       final regDoc = await reg.get();
 
@@ -188,7 +232,7 @@ class RegisterState extends State<Register> {
         "email": emailController.text.trim(),
         "phno": phnoController.text.trim(),
       });
-      await docRef.set({
+      await consumerno.set({
         'cons no' : consNumController.text
       }); 
       DocumentReference regRef  = FirebaseFirestore.instance

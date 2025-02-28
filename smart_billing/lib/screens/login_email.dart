@@ -20,7 +20,46 @@ class LoginState extends State<Login> {
   String msg = "Some unknown error occured";
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return SafeArea(
+        child: WillPopScope(
+      onWillPop: () async {
+        // Show exit confirmation dialog
+        bool exit = await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            //backgroundColor: Colors.amber[50],
+            title: const Text("Exit"),
+            content: const Text('Are you sure you want to exit?',),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  // Close the dialog and return true
+                  Navigator.of(context).pop(true);
+                },
+                child: const Text(
+                  'Yes',
+                  style: TextStyle(color: Color(0xFF4D4C7D), fontWeight: FontWeight.bold),
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  // Close the dialog and return false
+                  Navigator.of(context).pop(false);
+                },
+                child: const Text(
+                  'No',
+                  style: TextStyle(color: Color(0xFFFD7250), fontWeight: FontWeight.bold),
+                ),
+              ),
+              
+            ],
+          ),
+        );
+
+        // Return exit if user confirmed, otherwise don't exit
+        return exit;
+      },
+      child: Scaffold(
       backgroundColor: const Color(0xFF4D4C7D),
       body: SingleChildScrollView(
           child: Padding(
@@ -72,7 +111,7 @@ class LoginState extends State<Login> {
                       const SizedBox(height: 8),
                       TextButton(
                         onPressed: () {
-                          //Navigator.of(context).pushNamed('/resetpas');
+                          Navigator.of(context).pushNamed('/forgotpas');
                         },
                         child: const Text(
                           "Forgot Password?",
@@ -125,6 +164,8 @@ class LoginState extends State<Login> {
                   ),
                 ),
               ))),
+            )
+        )
     );
   }
 

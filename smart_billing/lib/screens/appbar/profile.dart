@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:smart_billing/widgets/button.dart';
 import 'package:smart_billing/widgets/inputfield.dart';
@@ -13,6 +14,7 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
+  bool isloading = false;
   final emailController = TextEditingController();
   final phnoController = TextEditingController();
   final consNumController = TextEditingController();
@@ -88,6 +90,8 @@ class _ProfileState extends State<Profile> {
     }
   }
 
+  
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -131,13 +135,38 @@ class _ProfileState extends State<Profile> {
                     const SizedBox(height: 18),
                     Buttons(label: "Edit Profile", fn: () {}),
                     const SizedBox(height: 10),
-                    Buttons(label: "Change Passwords", fn: () {},
-                      color: const Color(0xFFFD7250),
-                      bgcolor: Colors.white,)
+                    if (isloading)
+                        const CircularProgressIndicator()
+                    else
+                        Buttons(
+                          label: "Change Passwords", fn: () {resetpswd(emailController.text, context);},
+                          color: const Color(0xFFFD7250),
+                          bgcolor: Colors.white,
+                        )
                   ],
                 ),
               ),
             ),
     );
+  }
+  void resetpswd(String email, BuildContext context) async {
+    setState(() {
+      isloading = true;
+    });
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      MySnackbar.show(
+        context, "An email containing instructions to reset your password has been sent to your email address.",
+      );
+    } on FirebaseAuthException {
+      // print(e);
+      MySnackbar.show(
+          context, "Some unknown error occured please try again");
+    }
+    finally{
+      setState(() {
+        isloading = false;
+      });
+    }
   }
 }

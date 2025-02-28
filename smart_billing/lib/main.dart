@@ -6,6 +6,7 @@ import 'package:smart_billing/screens/appbar/profile.dart';
 import 'package:smart_billing/screens/dashboard.dart';
 // import 'package:mediwise/firebase_options.dart';
 import 'package:flutter/material.dart';
+import 'package:smart_billing/screens/forgot_pass.dart';
 // import 'package:mediwise/home_screen.dart';
 import 'package:smart_billing/screens/login_email.dart';
 import 'package:smart_billing/screens/register/register.dart';
@@ -45,6 +46,7 @@ class MyApp extends StatelessWidget {
           titleTextStyle: TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.white,
+            fontSize: 20
           )
         ),
       ),
@@ -57,7 +59,7 @@ class MyApp extends StatelessWidget {
         '/analytics': (context) => const Analytics(),
         '/register': (context) => const Register(),
         '/profile' : (context) => const Profile(),
-        // '/resetpas': (context)=> const ResetPassword()
+        '/forgotpas': (context)=> const ForgotPasswordPage(),
       },
     );
   }

@@ -1,8 +1,9 @@
-import 'dart:math';
+//import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:smart_billing/widgets/snackbar.dart';
 
 class Analytics extends StatefulWidget {
   const Analytics({super.key});
@@ -90,6 +91,7 @@ class _AnalyticsState extends State<Analytics> {
       });
     } catch (e) {
       print("Error fetching data: $e");
+      MySnackbar.show(context,msg);
     }
   }
 
@@ -112,14 +114,14 @@ class _AnalyticsState extends State<Analytics> {
                   lineBarsData: [
                     LineChartBarData(
                       spots: chartSpots,
-                      gradient: LinearGradient(
+                      gradient: const LinearGradient(
                         colors: [Color(0xFF4D4C7D), Color(0xFFFD7250)],
                       ),
                     ),
                   ],
                   titlesData: FlTitlesData(
                       bottomTitles: AxisTitles(
-                        axisNameWidget: Text(
+                        axisNameWidget: const Text(
                           'Month/Year',
                           style: TextStyle(
                               fontSize: 12, fontWeight: FontWeight.bold),
@@ -135,14 +137,14 @@ class _AnalyticsState extends State<Analytics> {
                           reservedSize: 30,
                         ),
                       ),
-                      topTitles: AxisTitles(
+                      topTitles: const AxisTitles(
                         sideTitles: SideTitles(showTitles: false),
                       ),
-                      rightTitles: AxisTitles(
+                      rightTitles: const AxisTitles(
                         sideTitles: SideTitles(showTitles: false),
                       ),
                       leftTitles: AxisTitles(
-                          sideTitles: SideTitles(
+                          sideTitles: const SideTitles(
                             reservedSize: 50,
                             showTitles: true,
                           ),
@@ -150,7 +152,7 @@ class _AnalyticsState extends State<Analytics> {
                             quarterTurns: 2,
                             child: Text(
                               yAxisTitle,
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontSize: 12, fontWeight: FontWeight.bold),
                             ),
                           ))),
@@ -158,7 +160,7 @@ class _AnalyticsState extends State<Analytics> {
                       LineTouchData(touchTooltipData: LineTouchTooltipData(
                     getTooltipItems: (touchedSpots) {
                       return touchedSpots.map((LineBarSpot touchedSpot) {
-                        final textStyle = TextStyle(
+                        const textStyle = TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                         );
@@ -171,21 +173,21 @@ class _AnalyticsState extends State<Analytics> {
               ),
             ),
           ),
-          Text(yAxisTitle + " vs Month/Year",
-              style: TextStyle(
+          Text("$yAxisTitle vs Month/Year",
+              style: const TextStyle(
                   color: Color(0xFFFD7250),
                   fontWeight: FontWeight.bold,
                   fontSize: 20)),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
-          Text("Swipe " + dxn + " to Analyse",
-              style: TextStyle(
+          Text("Swipe $dxn to Analyse",
+              style: const TextStyle(
                   color: Color(0xFF4D4C7D),
                   fontWeight: FontWeight.bold,
                   fontSize: 20)),
-          Text(next + " vs Month/Year",
-              style: TextStyle(
+          Text("$next vs Month/Year",
+              style: const TextStyle(
                   color: Color(0xFF4D4C7D),
                   fontWeight: FontWeight.bold,
                   fontSize: 15))
@@ -205,18 +207,17 @@ class _AnalyticsState extends State<Analytics> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        actions: [
-          IconButton(
-              onPressed: () {
-                Navigator.of(context).pushReplacementNamed('/dashboard');
-              },
-              icon: Icon(Icons.dashboard_outlined, color: Color(0xFFFD7250))),
-        ],
-        title: const Text('Analytics',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+        // actions: [
+        //   IconButton(
+        //       onPressed: () {
+        //         Navigator.of(context).pushReplacementNamed('/dashboard');
+        //       },
+        //       icon: Icon(Icons.dashboard_outlined, color: Color(0xFFFD7250))),
+        // ],
+        title: const Text('Analytics'),
       ),
       body: isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : PageView(
               children: [
                 Center(
