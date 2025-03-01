@@ -14,12 +14,14 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-  bool isloading = false;
+  bool isLoading = true;
+  bool isEditing = false;
+  bool isSaving = false;
+
   final emailController = TextEditingController();
   final phnoController = TextEditingController();
   final consNumController = TextEditingController();
   final nameController = TextEditingController();
-  bool isLoading = true;
 
   @override
   void initState() {
@@ -28,24 +30,23 @@ class _ProfileState extends State<Profile> {
   }
 
   Future<void> _fetchProfileDetails() async {
-    setState(() {
-      isLoading = true;
-    });
-    String msg = 'Some error occured';
+    setState(() => isLoading = true);
+    String msg = 'Some error occurred';
+
     try {
-      // Retrieve the current email from SharedPreferences
       final prefs = await SharedPreferences.getInstance();
       final email = prefs.getString('email');
+
       if (email == null || email.isEmpty) {
         msg = "Email not found in SharedPreferences.";
         throw Exception();
       }
 
-      // Fetch consumer number from consumer_number collection
       final consumerNumberDoc = await FirebaseFirestore.instance
           .collection('consumer number')
           .doc(email)
           .get();
+
       if (!consumerNumberDoc.exists) {
         msg = "Consumer number not found for the given email.";
         throw Exception();
@@ -57,11 +58,11 @@ class _ProfileState extends State<Profile> {
         throw Exception();
       }
 
-      // Fetch name and phone number from consumer collection
       final consumerDoc = await FirebaseFirestore.instance
           .collection('consumer')
           .doc(consumerNumber)
           .get();
+
       if (!consumerDoc.exists) {
         msg = "Consumer details not found for the given consumer number.";
         throw Exception();
@@ -74,7 +75,6 @@ class _ProfileState extends State<Profile> {
         throw Exception();
       }
 
-      // Populate the text fields with the fetched data
       setState(() {
         emailController.text = email;
         consNumController.text = consumerNumber;
@@ -84,20 +84,47 @@ class _ProfileState extends State<Profile> {
     } catch (e) {
       MySnackbar.show(context, msg);
     } finally {
-      setState(() {
-        isLoading = false;
-      });
+      setState(() => isLoading = false);
     }
   }
 
-  
-  
+  Future<void> _updateProfile() async {
+    setState(() => isSaving = true);
+    try {
+      await FirebaseFirestore.instance
+          .collection('consumer')
+          .doc(consNumController.text)
+          .update({
+        'name': nameController.text,
+        'phno': phnoController.text,
+      });
+
+      MySnackbar.show(context, "Profile updated successfully!");
+      setState(() => isEditing = false);
+    } catch (e) {
+      MySnackbar.show(context, "Failed to update profile. Try again.");
+    } finally {
+      setState(() => isSaving = false);
+    }
+  }
+
+  void resetPassword(String email, BuildContext context) async {
+    setState(() => isLoading = true);
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      MySnackbar.show(context,
+          "An email containing instructions to reset your password has been sent.");
+    } catch (e) {
+      MySnackbar.show(context, "Some unknown error occurred. Please try again.");
+    } finally {
+      setState(() => isLoading = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Profile'),
-      ),
+      appBar: AppBar(title: const Text('My Profile')),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
@@ -105,68 +132,52 @@ class _ProfileState extends State<Profile> {
                 padding: const EdgeInsets.all(30),
                 child: Column(
                   children: [
-                    // Name
                     InputField(
                       label: "Name",
                       controller: nameController,
-                      isEnable: false,
+                      isEnable: isEditing,
                     ),
                     const SizedBox(height: 8),
-                    // Consumer Number
                     InputField(
                       label: "Consumer Number",
                       controller: consNumController,
                       isEnable: false,
                     ),
                     const SizedBox(height: 8),
-                    // Email
                     InputField(
                       label: "Email",
                       controller: emailController,
                       isEnable: false,
                     ),
                     const SizedBox(height: 8),
-                    // Phone Number
                     InputField(
                       label: "Phone Number",
                       controller: phnoController,
-                      isEnable: false,
+                      isEnable: isEditing,
                     ),
                     const SizedBox(height: 18),
-                    Buttons(label: "Edit Profile", fn: () {}),
+                    Buttons(
+                      label: isEditing ? "Save" : "Edit Profile",
+                      fn: () {
+                        if (isEditing) {
+                          _updateProfile();
+                        } else {
+                          setState(() => isEditing = true);
+                        }
+                      },
+                    ),
                     const SizedBox(height: 10),
-                    if (isloading)
-                        const CircularProgressIndicator()
-                    else
-                        Buttons(
-                          label: "Change Passwords", fn: () {resetpswd(emailController.text, context);},
-                          color: const Color(0xFFFD7250),
-                          bgcolor: Colors.white,
-                        )
+                    if (isSaving) const CircularProgressIndicator(),
+                    Buttons(
+                      label: "Change Password",
+                      fn: () => resetPassword(emailController.text, context),
+                      color: const Color(0xFFFD7250),
+                      bgcolor: Colors.white,
+                    ),
                   ],
                 ),
               ),
             ),
     );
-  }
-  void resetpswd(String email, BuildContext context) async {
-    setState(() {
-      isloading = true;
-    });
-    try {
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
-      MySnackbar.show(
-        context, "An email containing instructions to reset your password has been sent to your email address.",
-      );
-    } on FirebaseAuthException {
-      // print(e);
-      MySnackbar.show(
-          context, "Some unknown error occured please try again");
-    }
-    finally{
-      setState(() {
-        isloading = false;
-      });
-    }
   }
 }

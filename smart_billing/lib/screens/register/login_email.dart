@@ -137,7 +137,7 @@ class LoginState extends State<Login> {
                       ),
                       Buttons(
                         label: 'Login with phone instead',
-                        fn: () {},
+                        fn: () {Navigator.of(context).pushNamed('/loginphno');},
                         color: const Color(0xFFFD7250),
                         bgcolor: Colors.white,
                       ),

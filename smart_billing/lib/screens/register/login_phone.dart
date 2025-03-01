@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:smart_billing/screens/register/otp.dart';
 import 'package:smart_billing/widgets/button.dart';
 import 'package:smart_billing/widgets/inputfield.dart';
-class OTPverification extends StatefulWidget {
-  final String phno;
-  const OTPverification({super.key, required this.phno});
+class LoginPhno extends StatefulWidget {
+  const LoginPhno({super.key});
 
   @override
-  OTPverificationState createState() => OTPverificationState();
+  LoginPhnoState createState() => LoginPhnoState();
 }
 
-class OTPverificationState extends State<OTPverification> {
+class LoginPhnoState extends State<LoginPhno> {
   final phnoController = TextEditingController();
   @override
   Widget build(BuildContext context) {
@@ -18,7 +18,7 @@ class OTPverificationState extends State<OTPverification> {
       body: SingleChildScrollView(
           child: Padding(
               padding: const EdgeInsets.all(30),
-              child: Container(        
+              child: Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(20), // Corner radius
@@ -40,7 +40,7 @@ class OTPverificationState extends State<OTPverification> {
                         height: 40,
                       ),
                       const Text(
-                        "OTP VERIFICATION",
+                        "LOGIN",
                         style: TextStyle(
                           color: Color(0xFF4D4C7D),
                           fontSize: 32,
@@ -51,25 +51,30 @@ class OTPverificationState extends State<OTPverification> {
                         height: 30,
                       ),
                       InputField(
-                        label: "OTP",
-                        hintText: "enter the OTP send to ${widget.phno}",
+                        label: "Phone number",
+                        hintText: "enter your registered phone number",
+                        controller: phnoController,
                       ),
+                      const SizedBox(height: 10),
+                      const Text("an otp will be sent to this phone number"),
                       const SizedBox(height: 24.0),
                       Buttons(
                           fn: () {
-                            
+                             Navigator.of(context)
+                                .push(MaterialPageRoute(builder: (context) {
+                              return OTPverification(phno: phnoController.text.trim());
+                            }));
                           },
-                          label: 'Verify',
+                          label: 'Get OTP',
                         ),
                       const SizedBox(
                         height: 300,
                       ),
-                    ]
-                  )
-                )
-              )
-          )
-      )
-    );
+                    ],
+                  ),
+                ),
+              ))),
+                );
   }
+  
 }

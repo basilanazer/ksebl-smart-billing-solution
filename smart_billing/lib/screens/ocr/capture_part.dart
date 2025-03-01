@@ -1,22 +1,22 @@
-import 'dart:io';
+//import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+//import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ImageCapture extends StatefulWidget {
-  ImageCapture({super.key});
+  const ImageCapture({super.key});
 
   @override
   State<ImageCapture> createState() => _ImageCaptureState();
 }
 
 class _ImageCaptureState extends State<ImageCapture> {
-  final ImagePicker _picker = ImagePicker();
+  //final ImagePicker _picker = ImagePicker();
 
   // bool isLoading = true;
-  File? _image;
+  //File? _image;
   bool barcodeFoundFlag = false;
   bool barcodeMatchFlag = false;
   bool isloading = true;
@@ -55,7 +55,7 @@ class _ImageCaptureState extends State<ImageCapture> {
 
   Future<void> fetchData() async {
     try {
-      String msg = 'Some error occurred';
+      //String msg = 'Some error occurred';
 
       // Fetch stored email from SharedPreferences
       final prefs = await SharedPreferences.getInstance();
@@ -113,7 +113,6 @@ class _ImageCaptureState extends State<ImageCapture> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     captureMeter();
   }
@@ -127,7 +126,7 @@ class _ImageCaptureState extends State<ImageCapture> {
               onPressed: () {
                 Navigator.of(context).pushReplacementNamed('/dashboard');
               },
-              icon: Icon(Icons.dashboard_outlined, color: Color(0xFFFD7250))),
+              icon: const Icon(Icons.dashboard_outlined, color: Color(0xFFFD7250))),
         ],
         title: const Text('Bill',
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
@@ -135,7 +134,7 @@ class _ImageCaptureState extends State<ImageCapture> {
       body: SafeArea(
           child: Center(
         child: isloading
-            ? CircularProgressIndicator()
+            ? const CircularProgressIndicator()
             : Center(
                 child: Column(
                   children: [
