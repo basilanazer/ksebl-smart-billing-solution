@@ -25,7 +25,7 @@ class _ImageCaptureState extends State<ImageCapture> {
   Future<void> captureMeter() async {
     try {
       scannedValue = await FlutterBarcodeScanner.scanBarcode(
-        "#ff6666", // Color for the scanning line
+        "#FD7250", // Color for the scanning line
         "Cancel", // Cancel button text
         true, // Show flash option
         ScanMode.BARCODE, // Use ScanMode.QR for QR codes
@@ -121,13 +121,13 @@ class _ImageCaptureState extends State<ImageCapture> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        actions: [
-          IconButton(
-              onPressed: () {
-                Navigator.of(context).pushReplacementNamed('/dashboard');
-              },
-              icon: const Icon(Icons.dashboard_outlined, color: Color(0xFFFD7250))),
-        ],
+        // actions: [
+        //   IconButton(
+        //       onPressed: () {
+        //         Navigator.of(context).pushReplacementNamed('/dashboard');
+        //       },
+        //       icon: const Icon(Icons.dashboard_outlined, color: Color(0xFFFD7250))),
+        // ],
         title: const Text('Bill',
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
       ),

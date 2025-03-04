@@ -135,15 +135,16 @@ class LoginState extends State<Login> {
                       const SizedBox(
                         height: 15,
                       ),
-                      Buttons(
-                        label: 'Login with phone instead',
-                        fn: () {Navigator.of(context).pushNamed('/loginphno');},
-                        color: const Color(0xFFFD7250),
-                        bgcolor: Colors.white,
-                      ),
+                      // Buttons(
+                      //   label: 'Login with phone instead',
+                      //   fn: () {Navigator.of(context).pushNamed('/loginphno');},
+                      //   color: const Color(0xFFFD7250),
+                      //   bgcolor: Colors.white,
+                      // ),
                       const SizedBox(
                         height: 10,
                       ),
+                      
                       TextButton(
                           onPressed: () {
                             Navigator.of(context)
@@ -159,7 +160,8 @@ class LoginState extends State<Login> {
                           )),
                       const SizedBox(
                         height: 70,
-                      )
+                      ),
+                      const SizedBox(height: 50),
                     ],
                   ),
                 ),

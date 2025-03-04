@@ -22,6 +22,7 @@ class _ProfileState extends State<Profile> {
   final phnoController = TextEditingController();
   final consNumController = TextEditingController();
   final nameController = TextEditingController();
+  final mtrController = TextEditingController();
 
   @override
   void initState() {
@@ -70,6 +71,7 @@ class _ProfileState extends State<Profile> {
 
       final name = consumerDoc.data()?['name'];
       final phno = consumerDoc.data()?['phno'];
+      final mtrno = consumerDoc.data()?['meter_no'];
       if (name == null || phno == null) {
         msg = "Name or phone number is missing in consumer details.";
         throw Exception();
@@ -80,6 +82,7 @@ class _ProfileState extends State<Profile> {
         consNumController.text = consumerNumber;
         nameController.text = name;
         phnoController.text = phno;
+        mtrController.text = mtrno;
       });
     } catch (e) {
       MySnackbar.show(context, msg);
@@ -132,25 +135,33 @@ class _ProfileState extends State<Profile> {
                 padding: const EdgeInsets.all(30),
                 child: Column(
                   children: [
+                    //name
                     InputField(
                       label: "Name",
                       controller: nameController,
                       isEnable: isEditing,
                     ),
                     const SizedBox(height: 8),
-                    InputField(
-                      label: "Consumer Number",
-                      controller: consNumController,
-                      isEnable: false,
-                    ),
-                    const SizedBox(height: 8),
+                    //email
                     InputField(
                       label: "Email",
                       controller: emailController,
                       isEnable: false,
                     ),
-                    const SizedBox(height: 8),
+                    //consumer no
+                    const SizedBox(height: 8),                    
                     InputField(
+                      label: "Consumer Number",
+                      controller: consNumController,
+                      isEnable: false,
+                    ),
+                    InputField(
+                      label: "Meter Number",
+                      controller: mtrController,
+                      isEnable: false,
+                    ),
+                    const SizedBox(height: 8),
+                    InputField(  
                       label: "Phone Number",
                       controller: phnoController,
                       isEnable: isEditing,

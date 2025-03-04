@@ -139,7 +139,8 @@ class _DashboardState extends State<Dashboard> {
                   ),
                   TextButton(
                     onPressed: () {
-                      Navigator.of(context).pushReplacementNamed('/capture');
+                      //Navigator.of(context).pushReplacementNamed('/capture');
+                      Navigator.of(context).pushNamed('/capture');
                     }, // Opens the camera
                     child: const Text(
                       "Capture Your Meter Now",
