@@ -4,15 +4,13 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:smart_billing/screens/appbar/analytics.dart';
 import 'package:smart_billing/screens/appbar/profile.dart';
 import 'package:smart_billing/screens/dashboard.dart';
-// import 'package:mediwise/firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:smart_billing/screens/forgot_pass.dart';
-// import 'package:mediwise/home_screen.dart';
+import 'package:smart_billing/screens/ocr/meter_detection.dart';
 import 'package:smart_billing/screens/register/login_email.dart';
-import 'package:smart_billing/screens/ocr/capture_part.dart';
+import 'package:smart_billing/screens/ocr/barcode_scanner.dart';
 import 'package:smart_billing/screens/register/login_phone.dart';
 import 'package:smart_billing/screens/register/register.dart';
-//import 'package:mediwise/register/reset_password.dart';
 import 'package:smart_billing/screens/splashscreen/splash_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -60,9 +58,9 @@ class MyApp extends StatelessWidget {
         '/analytics': (context) => const Analytics(),
         '/register': (context) => const Register(),
         '/profile': (context) => const Profile(),
-        '/capture': (context) => const ImageCapture(),
+        '/barcode': (context) => const BarcodeScannerScreen(),
+        '/mtrdetec': (context) => const MeterDetectionScreen(),
         '/forgotpas': (context)=> const ForgotPasswordPage(),
-        '/loginphno': (context)=> const LoginPhno(),
       
       },
     );

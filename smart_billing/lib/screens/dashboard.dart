@@ -140,7 +140,7 @@ class _DashboardState extends State<Dashboard> {
                   TextButton(
                     onPressed: () {
                       //Navigator.of(context).pushReplacementNamed('/capture');
-                      Navigator.of(context).pushNamed('/capture');
+                      Navigator.of(context).pushNamed('/barcode');
                     }, // Opens the camera
                     child: const Text(
                       "Capture Your Meter Now",
@@ -175,7 +175,7 @@ class _DashboardState extends State<Dashboard> {
                     size: 40,
                   ),
                   Text(
-                    "Next Bill Due 11th November",
+                    "Next Bill Due 10th April",
                     style: TextStyle(
                         fontSize: 20,
                         color: Color(0xFF4D4C7D),

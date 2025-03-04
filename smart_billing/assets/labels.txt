@@ -1,0 +1,2 @@
+0 electricity meter
+1 not electricity meter
