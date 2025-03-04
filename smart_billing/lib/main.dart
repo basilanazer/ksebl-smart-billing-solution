@@ -9,7 +9,6 @@ import 'package:smart_billing/screens/forgot_pass.dart';
 import 'package:smart_billing/screens/ocr/meter_detection.dart';
 import 'package:smart_billing/screens/register/login_email.dart';
 import 'package:smart_billing/screens/ocr/barcode_scanner.dart';
-import 'package:smart_billing/screens/register/login_phone.dart';
 import 'package:smart_billing/screens/register/register.dart';
 import 'package:smart_billing/screens/splashscreen/splash_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
