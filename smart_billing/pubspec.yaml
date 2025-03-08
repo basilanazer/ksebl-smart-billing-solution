@@ -14,21 +14,27 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_barcode_scanner: ^2.0.0
+  #flutter_launcher_icons: ^0.14.3
+  #icons_launcher: ^2.0.7
+  #icons_launcher: ^2.0.7
   image_picker: ^1.1.2
   shared_preferences: ^2.3.3
   tflite_flutter: ^0.11.0
   tflite_flutter_helper_plus: ^0.0.2
 
 dev_dependencies:
-  flutter_launcher_icons: 0.11.0 
   flutter_lints: ^3.0.0
   flutter_test:
-    sdk: flutter
+    sdk: flutter  
+  icons_launcher: ^2.0.7
 
-flutter_icons:
-  android: true
-  ios: true
-  image_path: "assets/icon/icon.png"
+icons_launcher:
+  image_path: "assets/app_icon.png"  # Path to your icon
+  platforms:
+    android:
+      enable: true
+    ios:
+      enable: true
 
 flutter:
   uses-material-design: true

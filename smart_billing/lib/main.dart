@@ -2,6 +2,7 @@
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:smart_billing/screens/appbar/analytics.dart';
+import 'package:smart_billing/screens/appbar/bill_history.dart';
 import 'package:smart_billing/screens/appbar/profile.dart';
 import 'package:smart_billing/screens/dashboard.dart';
 import 'package:flutter/material.dart';
@@ -60,6 +61,7 @@ class MyApp extends StatelessWidget {
         '/barcode': (context) => const BarcodeScannerScreen(),
         '/mtrdetec': (context) => const MeterDetectionScreen(),
         '/forgotpas': (context)=> const ForgotPasswordPage(),
+        '/billhistory': (context)=> const BillHistory(),
       
       },
     );

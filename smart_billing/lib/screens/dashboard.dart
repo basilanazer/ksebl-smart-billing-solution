@@ -1,5 +1,10 @@
+import 'dart:async';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_billing/model/logout.dart';
+import 'package:smart_billing/widgets/button.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -15,6 +20,18 @@ class _DashboardState extends State<Dashboard> {
   //       .doc(id)
   //       .set(dets);
   // }
+
+  String? dueDate;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchDueDate().then((date) {
+      setState(() {
+        dueDate = date;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,14 +106,24 @@ class _DashboardState extends State<Dashboard> {
               color: Color(0xFFFD7250),
             ),
           ),
-          //notifications
+          //bill history
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.of(context).pushNamed('/billhistory');
+            },
             icon: const Icon(
-              Icons.notifications_active_outlined,
+              Icons.history,
               color: Color(0xFFFD7250),
             ),
-          ),
+          ),          
+          //notifications
+          // IconButton(
+          //   onPressed: () {},
+          //   icon: const Icon(
+          //     Icons.notifications_active_outlined,
+          //     color: Color(0xFFFD7250),
+          //   ),
+          // ),
           //profile
           IconButton(
             onPressed: () {
@@ -111,6 +138,7 @@ class _DashboardState extends State<Dashboard> {
         title: const Text('DashBoard',),
       ),
       body: SingleChildScrollView(
+        child: Padding(padding: const EdgeInsets.all(30),
         child: Column(
           children: [
             const SizedBox(height: 30),
@@ -121,8 +149,10 @@ class _DashboardState extends State<Dashboard> {
                 height: 112,
               ),
             ),
+            const SizedBox(height: 40,),
+            //capture
             Container(
-              margin: const EdgeInsets.all(30),
+              //margin: const EdgeInsets.all(30),
               height: 100,
               width: double.infinity,
               decoration: BoxDecoration(
@@ -158,25 +188,29 @@ class _DashboardState extends State<Dashboard> {
                 ],
               ),
             ),
+            
+            const SizedBox(height: 40,),
+
+            //due date
             Container(
-              margin: const EdgeInsets.all(30),
+              //margin: const EdgeInsets.all(30),
               height: 100,
-              width: double.infinity,
+              //width: double.infinity,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 color: const Color(0xFFFD7250),
               ),
-              child: const Row(
+              child:  Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.file_copy,
                     color: Colors.white,
                     size: 40,
                   ),
                   Text(
-                    "Next Bill Due 10th April",
-                    style: TextStyle(
+                    "Next Bill Due ${dueDate ?? 'Loading...'}",
+                    style: const TextStyle(
                         fontSize: 20,
                         color: Color(0xFF4D4C7D),
                         fontWeight: FontWeight.bold),
@@ -184,11 +218,15 @@ class _DashboardState extends State<Dashboard> {
                 ],
               ),
             ),
+            const SizedBox(height: 40,),
+            //analytics last month
             const Align(
               alignment: Alignment.topLeft,
-              child: Padding(
-                padding: EdgeInsets.only(left: 30),
-                child: Text(
+              child: 
+              // Padding(
+              // padding: EdgeInsets.only(left: 30),
+              // child: 
+              Text(
                   "Last Month Analytics",
                   style: TextStyle(
                       color: Color(0xFF4D4C7D),
@@ -196,14 +234,15 @@ class _DashboardState extends State<Dashboard> {
                       fontSize: 20),
                 ),
               ),
-            ),
+            //),
+            const SizedBox(height:10),
             Container(
-              //height: 100,
-              margin: const EdgeInsets.all(30),
+              height: 130,
+              //margin: const EdgeInsets.all(30),
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
-                color: const Color.fromARGB(255, 189, 188, 231),
+                color: const Color(0xffc2c2e1)
               ),
               child: const Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -243,12 +282,78 @@ class _DashboardState extends State<Dashboard> {
                 ],
               ),
             ),
-            // Your existing code continues...
+            const SizedBox(height: 40,),
+            Buttons(
+              label: "How to Capture Meter Reading?",
+              color: const Color(0xFFFD7250),
+              bgcolor: Colors.white,
+              fn: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const GuideScreen(),
+                  ),
+                );
+              },
+            ),
           ],
         ),
       ),
     ),
     )
-  );
+  )
+    );
   }
+}
+
+class GuideScreen extends StatelessWidget {
+  const GuideScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xff4d4c7d),
+      body: Center(
+        child: Image.asset(
+          'assets/guide_image.png', // Replace with your guide image
+          //width: double.infinity,
+          //height: double.infinity,
+          fit: BoxFit.cover,
+        ),
+      ),
+    );
+  }
+}
+
+Future<String> fetchDueDate() async {
+  final prefs = await SharedPreferences.getInstance();
+  final email = prefs.getString('email');
+  if (email == null) return ''; 
+
+  String consno = '';
+  String date = '';
+
+  // Fetch consumer number
+  DocumentSnapshot consumerDoc = await FirebaseFirestore.instance
+      .collection('consumer number')
+      .doc(email)
+      .get();
+
+  if (consumerDoc.exists) {
+    consno = consumerDoc['cons no'];
+  } else {
+    return ''; 
+  }
+
+  // Fetch due date using consumer number
+  DocumentSnapshot dueDoc = await FirebaseFirestore.instance
+      .collection('next bill due')
+      .doc(consno)
+      .get();
+
+  if (dueDoc.exists) {
+    date = dueDoc['date'];
+  }
+
+  return date; 
 }
