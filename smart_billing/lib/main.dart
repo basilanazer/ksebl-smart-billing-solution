@@ -43,10 +43,9 @@ class MyApp extends StatelessWidget {
             backgroundColor: Color(0xFF4D4C7D),
             foregroundColor: Color(0xFFFD7250),
             titleTextStyle: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              fontSize: 20
-          )),
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                fontSize: 20)),
       ),
       initialRoute: '/',
       routes: {
@@ -58,9 +57,11 @@ class MyApp extends StatelessWidget {
         '/register': (context) => const Register(),
         '/profile': (context) => const Profile(),
         '/barcode': (context) => const BarcodeScannerScreen(),
-        '/mtrdetec': (context) => const MeterDetectionScreen(),
-        '/forgotpas': (context)=> const ForgotPasswordPage(),
-      
+        '/mtrdetec': (context) => const MeterDetectionScreen(
+              meterNumber: "",
+              consumerNumberIs: "",
+            ),
+        '/forgotpas': (context) => const ForgotPasswordPage(),
       },
     );
   }

@@ -21,7 +21,7 @@ class BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
   String scannedValue = '';
   String message = "Scanning Meter...";
   int countdown = 3; // Countdown before redirection
-
+  String consumerNumber = '';
   @override
   void initState() {
     super.initState();
@@ -32,7 +32,10 @@ class BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
   Future<void> scanBarcode() async {
     try {
       scannedValue = await FlutterBarcodeScanner.scanBarcode(
-        "#FD7250", "Cancel", true, ScanMode.BARCODE,
+        "#FD7250",
+        "Cancel",
+        true,
+        ScanMode.BARCODE,
       );
 
       if (scannedValue != "-1") {
@@ -43,7 +46,8 @@ class BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
         validateMeterNumber();
       } else {
         // If user cancels, navigate to dashboard
-        Navigator.of(context).pushNamedAndRemoveUntil('/dashboard', (route) => false);
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil('/dashboard', (route) => false);
       }
     } catch (e) {
       setState(() {
@@ -64,14 +68,16 @@ class BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
           .doc(email)
           .get();
 
-      if (!consumerNumberDoc.exists) throw Exception("Consumer number not found.");
+      if (!consumerNumberDoc.exists)
+        throw Exception("Consumer number not found.");
 
-      final consumerNumber = consumerNumberDoc.data()?['cons no'];
-      if (consumerNumber == null || consumerNumber.isEmpty) throw Exception("Consumer number invalid.");
+      final consumerNum = consumerNumberDoc.data()?['cons no'];
+      if (consumerNum == null || consumerNum.isEmpty)
+        throw Exception("Consumer number invalid.");
 
       final consumerMeterDoc = await FirebaseFirestore.instance
           .collection('consumer')
-          .doc(consumerNumber)
+          .doc(consumerNum)
           .get();
 
       if (!consumerMeterDoc.exists) throw Exception("Meter number not found.");
@@ -80,8 +86,10 @@ class BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
 
       if (meterNumber == scannedValue) {
         setState(() {
+          consumerNumber = consumerNum;
           barcodeMatchFlag = true;
-          message = "Meter Number Detected : $scannedValue \n\n✅ Meter Number Verified!\n\nRedirecting in $countdown seconds...\n\nCapture the unit recording before timelimit exceeds";
+          message =
+              "Meter Number Detected : $scannedValue \n\n✅ Meter Number Verified!\n\nRedirecting in $countdown seconds...\n\nCapture the unit recording before timelimit exceeds";
         });
 
         // Start countdown before redirecting to meter detection
@@ -108,13 +116,16 @@ class BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
       if (countdown > 1) {
         setState(() {
           countdown--;
-          message = "Meter Number Detected : $scannedValue \n\n✅ Meter Number Verified!\n\nRedirecting in $countdown seconds...\n\nCapture the unit recording before timelimit exceeds";
+          message =
+              "Meter Number Detected : $scannedValue \n\n✅ Meter Number Verified!\n\nRedirecting in $countdown seconds...\n\nCapture the unit recording before timelimit exceeds";
         });
       } else {
         timer.cancel();
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const MeterDetectionScreen()),
+          MaterialPageRoute(
+              builder: (context) => MeterDetectionScreen(
+                  meterNumber: scannedValue, consumerNumberIs: consumerNumber)),
         );
       }
     });
@@ -123,21 +134,19 @@ class BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        actions: [
-          //logout
-          IconButton(
-            onPressed: () {
-              Navigator.of(context).pushNamedAndRemoveUntil('/dashboard', (route) => false);
-            },
-            icon: const Icon(
-              Icons.home_outlined,
-              color: Color(0xFFFD7250),
-            ),
+      appBar: AppBar(actions: [
+        //logout
+        IconButton(
+          onPressed: () {
+            Navigator.of(context)
+                .pushNamedAndRemoveUntil('/dashboard', (route) => false);
+          },
+          icon: const Icon(
+            Icons.home_outlined,
+            color: Color(0xFFFD7250),
           ),
-        ],
-        title: const Text("Meter Verification")
-      ),
+        ),
+      ], title: const Text("Meter Verification")),
       body: SafeArea(
         child: Center(
           child: isLoading
@@ -145,9 +154,14 @@ class BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
               : Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(message, textAlign: TextAlign.center, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    Text(message,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 20),
-                    barcodeMatchFlag ? CircularProgressIndicator(value: countdown / 3) : const SizedBox(),
+                    barcodeMatchFlag
+                        ? CircularProgressIndicator(value: countdown / 3)
+                        : const SizedBox(),
                   ],
                 ),
         ),
