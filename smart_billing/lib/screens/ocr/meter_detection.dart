@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:smart_billing/widgets/button.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 import 'package:tflite_flutter_helper_plus/tflite_flutter_helper_plus.dart';
@@ -41,6 +43,7 @@ class _MeterDetectionScreenState extends State<MeterDetectionScreen> {
     _startTimer(); // Start countdown when screen opens
     //captureImage(); // Automatically open the camera
     fetchPreviousMonthData();
+    getEmailnContact();
   }
 
   /// Start a 15-second countdown timer
@@ -191,10 +194,10 @@ class _MeterDetectionScreenState extends State<MeterDetectionScreen> {
       print("hi $prevBillDate");
       DateTime oneMonthLater =
           DateTime(prevbillDt.year, prevbillDt.month + 1, prevbillDt.day);
-     
+
       DateTime twoMonthLater =
           DateTime(prevbillDt.year, prevbillDt.month + 2, prevbillDt.day);
-      
+
       DateTime futureDate1 = oneMonthLater.add(const Duration(days: 10));
       DateTime futureDate2 = oneMonthLater.add(const Duration(days: 15));
       setState(() {
@@ -210,6 +213,79 @@ class _MeterDetectionScreenState extends State<MeterDetectionScreen> {
       });
     }
     print(prevBillDate);
+  }
+
+  String phoneNumber = "";
+  String email = "";
+//EMail n COntact
+  Future<void> getEmailnContact() async {
+    final consumerMeterDoc = await FirebaseFirestore.instance
+        .collection('consumer')
+        .doc(widget.consumerNumberIs)
+        .get();
+    setState(() {
+      phoneNumber = consumerMeterDoc.data()?['phno'];
+      email = consumerMeterDoc.data()?['email'];
+    });
+  }
+
+// Proceed to pay
+  void _proceedToPay(Map<String, dynamic> allAmounts) {
+    var options = {
+      'key': 'rzp_test_9XbJPu0vOzevBn',
+      'amount':
+          (double.parse(allAmounts['bill_total']['value'].toString()) * 100)
+              .toInt(), // ₹100 in paise
+      'currency': 'INR',
+      'name': 'KSEB Monthly Bill',
+      'description': 'For $billDate',
+      'prefill': {'contact': phoneNumber, 'email': email},
+      'theme': {'color': "#3399cc"}
+    };
+
+    razorpay.on(
+        Razorpay.EVENT_PAYMENT_SUCCESS,
+        (PaymentSuccessResponse response) =>
+            _handlePaymentSuccess(response, allAmounts));
+
+    razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
+    razorpay.open(options);
+  }
+
+  // Handle payment success
+  void _handlePaymentSuccess(
+      PaymentSuccessResponse response, Map<String, dynamic> allAmounts) async {
+    Fluttertoast.showToast(msg: "Payment Successfull");
+
+    await addBillDataToDatabase(
+      nextbilldue: nextbilldue,
+      billDate: billDate,
+      disconnDate: disconnDate,
+      duty: allAmounts['ED']?['value']?.toString() ?? "0.0",
+      ecSubsidy: allAmounts['YE']?['value']?.toString() ?? "0.0",
+      energyCharge: allAmounts['EC']?['value']?.toString() ?? "0.0",
+      fcSubsidy: allAmounts['YF']?['value']?.toString() ?? "0.0",
+      fixedCharge: allAmounts['FC']?['value']?.toString() ?? "0.0",
+      meterRent: allAmounts['MR']?['value']?.toString() ?? "0.0",
+      monthlyFuelSurcharge: allAmounts['FSM']?['value']?.toString() ?? "0.0",
+      billNumber: (int.parse(prevBillNo) + 1).toString(),
+      cons: (curr - int.parse(prevReading)).toString(),
+      curr: curr.toString(),
+      dueDate: dueDate,
+      load: "1 KW",
+      prev: prevReading,
+      prsRdDate: billDate,
+      prvAmountPaid: prevPaidAmt,
+      prvRdDate: prevBillDate,
+      total: allAmounts['bill_total']?['value']?.toString() ?? "0.0",
+      unit: "KWH/A",
+    );
+    print("Data added successfully!");
+  }
+
+// Handle Payment Failure
+  void _handlePaymentError(PaymentFailureResponse response) {
+    Fluttertoast.showToast(msg: "Payment Failed");
   }
 
 // Add to database
@@ -268,15 +344,15 @@ class _MeterDetectionScreenState extends State<MeterDetectionScreen> {
         .collection(widget.consumerNumberIs)
         .doc(currentMonth)
         .set(billData);
-    
-    
+
     await FirebaseFirestore.instance
         .collection("dashboard details")
         .doc(widget.consumerNumberIs)
-        .set({"next bill due" : nextbilldue,
-          'last unit' : cons,
-          'last amt' : total
-        });
+        .set({
+      "next bill due": nextbilldue,
+      'last unit': cons,
+      'last amt': total
+    });
 
     print("Bill data added successfully!");
   }
@@ -285,12 +361,20 @@ class _MeterDetectionScreenState extends State<MeterDetectionScreen> {
   void dispose() {
     _timer?.cancel(); // Cancel timer when leaving the screen
     super.dispose();
+    try {
+      razorpay.clear();
+    } catch (e) {
+      print(e);
+    }
   }
+
+  Razorpay razorpay = Razorpay();
 
   @override
   Widget build(BuildContext context) {
     DateTime today = DateTime.now();
     String todayDate = DateFormat('dd/MM/yyyy').format(today);
+
     // IF  BASED ON READING TAKEN TODAY
     // DateTime futureDate1 = today.add(Duration(days: 10));
     // String dueDate = DateFormat('dd/MM/yyyy').format(futureDate1);
@@ -498,7 +582,8 @@ class _MeterDetectionScreenState extends State<MeterDetectionScreen> {
                         height: 20,
                       ),
                       // readings-✅prev,❌curr,✅cons
-                      const HeadingsForContainer(heading: "Readings & Cons.(MM)"),
+                      const HeadingsForContainer(
+                          heading: "Readings & Cons.(MM)"),
                       EachContainer(childContainer: [
                         Table(
                           border: null,
@@ -650,46 +735,16 @@ class _MeterDetectionScreenState extends State<MeterDetectionScreen> {
                                 height: 20,
                               ),
                               Buttons(
-                                fn: () async {
-                                  await addBillDataToDatabase(
-                                    billDate: billDate,
-                                    disconnDate: disconnDate,
-                                    duty: allAmounts['ED']['value'].toString(),
-                                    ecSubsidy: allAmounts['YE']?['value']
-                                            ?.toString() ??
-                                        "0.0",
-                                    energyCharge:
-                                        allAmounts['EC']['value'].toString(),
-                                    fcSubsidy: allAmounts['YF']?['value']
-                                            ?.toString() ??
-                                        "0.0",
-                                    fixedCharge:
-                                        allAmounts['FC']['value'].toString(),
-                                    meterRent:
-                                        allAmounts['MR']['value'].toString(),
-                                    monthlyFuelSurcharge: allAmounts['FSM']
-                                                ?['value']
-                                            ?.toString() ??
-                                        "0.0",
-                                    billNumber:
-                                        (int.parse(prevBillNo) + 1).toString(),
-                                    cons: (curr - int.parse(prevReading))
-                                        .toString(),
-                                    curr: curr.toString(),
-                                    dueDate: dueDate,
-                                    load: "1 KW",
-                                    prev: prevReading,
-                                    prsRdDate: billDate,
-                                    prvAmountPaid: prevPaidAmt,
-                                    prvRdDate: prevBillDate,
-                                    total: allAmounts['bill_total']['value']
-                                        .toString(),
-                                    unit: "KWH/A",
-                                    nextbilldue: nextbilldue
-                                  );
-                                  print("Data added successfully!");
+                                fn: () {
+                                  if (allAmounts != null) {
+                                    _proceedToPay(allAmounts);
+                                  } else {
+                                    Fluttertoast.showToast(
+                                        msg:
+                                            "Bill details not available. Please wait.");
+                                  }
                                 },
-                                label: "Add Bill Data",
+                                label: "Proceed To Pay",
                               ),
                             ],
                           );
