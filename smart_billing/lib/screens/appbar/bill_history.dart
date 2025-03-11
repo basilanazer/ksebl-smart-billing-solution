@@ -166,13 +166,13 @@ class BillDetailsPage extends StatelessWidget {
 
   final Map<String, String> fieldLabels = {
     'consumer no': 'Consumer Number', 'consumer name': 'Name',
-    'bill#': 'Bill Number', 'bill date': 'Bill Date', 'due date': 'Due Date', 'disconn dt': 'Disconnection Date',
+    'bill#': 'Bill Number', 'Bill date': 'Bill Date', 'due date': 'Due Date', 'Disconn dt': 'Disconnection Date',
     'load': 'Load',  'consumer phase': 'Phase', 'prv rd dt': 'Previous Reading Date',
     'prs rd date': 'Present Reading Date', 'unit': 'Unit', 'curr': 'Current Reading',
     'prev': 'Previous Reading', 'cons': 'Consumed Units',
     'Fixed Charge': 'Fixed Charge', 'Meter Rent': 'Meter Rent',
-    'Energy Charge': 'Energy Charge', 'duty': 'Duty', 'FC Subsidy': 'FC Subsidy',
-    'EC Subsidy': 'EC Subsidy', 'total': 'Total Amount Payable'
+    'Energy Charge': 'Energy Charge', 'Duty': 'Duty', 'FC Subsidy': 'FC Subsidy', 
+    'EC Subsidy': 'EC Subsidy','Monthly Fuel Surcharge':'Monthly Fuel Surcharge', 'total': 'Total Amount Payable'
   };
 
   @override

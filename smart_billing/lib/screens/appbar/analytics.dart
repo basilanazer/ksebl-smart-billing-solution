@@ -26,7 +26,7 @@ class _AnalyticsState extends State<Analytics> {
 
   Future<void> fetchData() async {
     String msg = 'Some error occured';
-    try {      
+    try {
       final prefs = await SharedPreferences.getInstance();
       final email = prefs.getString('email');
       if (email == null || email.isEmpty) {
@@ -59,8 +59,8 @@ class _AnalyticsState extends State<Analytics> {
         final idParts = doc.id.split('-');
         final year = int.parse(idParts[0]);
         final month = int.parse(idParts[1]);
-        final units = double.parse(doc['Units Consumed']);
-        final price = double.parse(doc['Amount Payable']);
+        final units = double.parse(doc['cons']);
+        final price = double.parse(doc['total']);
         return {
           'date': DateTime(year, month),
           'units': units,
@@ -91,7 +91,7 @@ class _AnalyticsState extends State<Analytics> {
       });
     } catch (e) {
       print("Error fetching data: $e");
-      MySnackbar.show(context,msg);
+      MySnackbar.show(context, msg);
     }
   }
 

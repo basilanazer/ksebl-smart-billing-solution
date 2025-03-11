@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+//import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_billing/model/logout.dart';
 import 'package:smart_billing/widgets/button.dart';
@@ -13,6 +14,13 @@ class Dashboard extends StatefulWidget {
   State<Dashboard> createState() => _DashboardState();
 }
 
+// Future<void> addItems(Map<String, dynamic> dets, String id) async {
+//   return await FirebaseFirestore.instance
+//       .collection("1114567890123")
+//       .doc(id)
+//       .set(dets);
+// }
+
 class _DashboardState extends State<Dashboard> {
   // Future addItems(Map<String, dynamic> dets, String id) async {
   //   return await FirebaseFirestore.instance
@@ -22,28 +30,23 @@ class _DashboardState extends State<Dashboard> {
   // }
 
   String? dueDate;
+  String? unit;
+  String? amt;
 
   @override
   void initState() {
     super.initState();
-    fetchDueDate().then((date) {
+    fetchDueDate().then((det) {
       setState(() {
-        dueDate = date;
+        dueDate = det[0];
+        amt = det[1];
+        unit = det[2];
       });
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    //USE THIS PART TO ADD DUMMY VALUES
-    // addItems({
-    //   "Bill Date": "06.10.2020",
-    //   "Current Reading": "22255",
-    //   "Previous Reading": "22176",
-    //   "Units Consumed": "79",
-    //   "Amount Payable": "454",
-    // }, "2020-10");
-
     return SafeArea(
         child: WillPopScope(
       onWillPop: () async {
@@ -53,7 +56,9 @@ class _DashboardState extends State<Dashboard> {
           builder: (context) => AlertDialog(
             //backgroundColor: Colors.amber[50],
             title: const Text("Exit"),
-            content: const Text('Are you sure you want to exit?',),
+            content: const Text(
+              'Are you sure you want to exit?',
+            ),
             actions: <Widget>[
               TextButton(
                 onPressed: () {
@@ -62,7 +67,8 @@ class _DashboardState extends State<Dashboard> {
                 },
                 child: const Text(
                   'Yes',
-                  style: TextStyle(color: Color(0xFF4D4C7D), fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      color: Color(0xFF4D4C7D), fontWeight: FontWeight.bold),
                 ),
               ),
               TextButton(
@@ -72,10 +78,10 @@ class _DashboardState extends State<Dashboard> {
                 },
                 child: const Text(
                   'No',
-                  style: TextStyle(color: Color(0xFFFD7250), fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      color: Color(0xFFFD7250), fontWeight: FontWeight.bold),
                 ),
               ),
-              
             ],
           ),
         );
@@ -244,19 +250,19 @@ class _DashboardState extends State<Dashboard> {
                 borderRadius: BorderRadius.circular(20),
                 color: const Color(0xffc2c2e1)
               ),
-              child: const Column(
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   Row(
                     children: [
-                      Text(
+                      const Text(
                         "Unit: ",
                         style: TextStyle(
                             color: Colors.white, fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        "235 KW",
-                        style: TextStyle(
+                        "${unit ?? 'Loading...'} KWH",
+                        style: const TextStyle(
                             color: Color(0xFF4D4C7D),
                             fontWeight: FontWeight.bold,
                             fontSize: 20),
@@ -265,14 +271,14 @@ class _DashboardState extends State<Dashboard> {
                   ),
                   Row(
                     children: [
-                      Text(
+                      const Text(
                         "Amount(Rs): ",
                         style: TextStyle(
                             color: Colors.white, fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        "1640.00",
-                        style: TextStyle(
+                        "Rs ${amt ?? 'Loading...'}",
+                        style: const TextStyle(
                             color: Color(0xFF4D4C7D),
                             fontWeight: FontWeight.bold,
                             fontSize: 20),
@@ -325,13 +331,15 @@ class GuideScreen extends StatelessWidget {
   }
 }
 
-Future<String> fetchDueDate() async {
+Future<List> fetchDueDate() async {
   final prefs = await SharedPreferences.getInstance();
   final email = prefs.getString('email');
-  if (email == null) return ''; 
+  if (email == null) return []; 
 
   String consno = '';
   String date = '';
+  String unit = '';
+  String amt = '';
 
   // Fetch consumer number
   DocumentSnapshot consumerDoc = await FirebaseFirestore.instance
@@ -342,18 +350,20 @@ Future<String> fetchDueDate() async {
   if (consumerDoc.exists) {
     consno = consumerDoc['cons no'];
   } else {
-    return ''; 
+    return []; 
   }
 
   // Fetch due date using consumer number
   DocumentSnapshot dueDoc = await FirebaseFirestore.instance
-      .collection('next bill due')
+      .collection('dashboard details')
       .doc(consno)
       .get();
 
   if (dueDoc.exists) {
-    date = dueDoc['date'];
+    date = dueDoc['next bill due'];
+    amt = dueDoc['last amt'];
+    unit = dueDoc['last unit'];
   }
 
-  return date; 
+  return [date,amt,unit]; 
 }
