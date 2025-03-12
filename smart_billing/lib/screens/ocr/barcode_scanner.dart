@@ -90,16 +90,19 @@ class BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
         setState(() {
           consumerNumber = consumerNum;
           barcodeMatchFlag = true;
-          message =
-              "Meter Number Detected : $scannedValue \n\n✅ Meter Number Verified!\n\nRedirecting in $countdown seconds...\n\nCapture the unit recording before timelimit exceeds";
+          message = scannedValue.length <= 7 ? 
+          "Meter Number Detected : $scannedValue \n\n✅ Meter Number Verified!\n\nRedirecting in $countdown seconds...\n\nCapture the unit recording before timelimit exceeds" : 
+          "Meter Number Detected : ${scannedValue.substring(scannedValue.length - 8)} \n\n✅ Meter Number Verified!\n\nRedirecting in $countdown seconds...\n\nCapture the unit recording before timelimit exceeds";                
         });
 
         // Start countdown before redirecting to meter detection
         startCountdown();
       } else {
+        print(meterNumber);
         setState(() {
           message = "❌ Meter Number Mismatch! Scan again.";
         });
+        
       }
     } catch (e) {
       setState(() {
@@ -118,8 +121,9 @@ class BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
       if (countdown > 1) {
         setState(() {
           countdown--;
-          message =
-              "Meter Number Detected : $scannedValue \n\n✅ Meter Number Verified!\n\nRedirecting in $countdown seconds...\n\nCapture the unit recording before timelimit exceeds";
+          message = scannedValue.length <= 7 ? 
+          "Meter Number Detected : $scannedValue \n\n✅ Meter Number Verified!\n\nRedirecting in $countdown seconds...\n\nCapture the unit recording before timelimit exceeds" : 
+          "Meter Number Detected : ${scannedValue.substring(scannedValue.length - 8)} \n\n✅ Meter Number Verified!\n\nRedirecting in $countdown seconds...\n\nCapture the unit recording before timelimit exceeds";                
         });
       } else {
         timer.cancel();
@@ -135,7 +139,50 @@ class BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return SafeArea(
+        child: WillPopScope(
+      onWillPop: () async {
+        // Show exit confirmation dialog
+        bool exit = await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            //backgroundColor: Colors.amber[50],
+            title: const Text("Exit"),
+            content: const Text(
+              'Are you sure you want to go back ? \nOnce you go your progress will be lost',
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  // Close the dialog and return true
+                  Navigator.of(context)
+                    .pushNamedAndRemoveUntil('/dashboard', (route) => false);
+                },
+                child: const Text(
+                  'Yes',
+                  style: TextStyle(
+                      color: Color(0xFF4D4C7D), fontWeight: FontWeight.bold),
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  // Close the dialog and return false
+                  Navigator.of(context).pop(false);
+                },
+                child: const Text(
+                  'No',
+                  style: TextStyle(
+                      color: Color(0xFFFD7250), fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ),
+        );
+
+        // Return exit if user confirmed, otherwise don't exit
+        return exit;
+      },
+      child: Scaffold(
       appBar: AppBar(actions: [
         //logout
         IconButton(
@@ -168,6 +215,8 @@ class BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                 ),
         ),
       ),
+      )
+        )
     );
   }
 }

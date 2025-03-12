@@ -82,7 +82,9 @@ class _ProfileState extends State<Profile> {
         consNumController.text = consumerNumber;
         nameController.text = name;
         phnoController.text = phno;
-        mtrController.text = mtrno;
+        mtrController.text = mtrno.length <= 7 ? mtrno : 
+        mtrno.substring(mtrno.length - 8);
+
       });
     } catch (e) {
       MySnackbar.show(context, msg);

@@ -34,7 +34,7 @@ class _MeterDetectionScreenState extends State<MeterDetectionScreen> {
   Timer? _timer; // Timer variable
   bool timeEnd = false;
   bool showButton = true;
-  int curr = 23333;
+  int curr = 8909;
 
   @override
   void initState() {
@@ -281,6 +281,8 @@ class _MeterDetectionScreenState extends State<MeterDetectionScreen> {
       unit: "KWH/A",
     );
     print("Data added successfully!");
+    Navigator.of(context)
+                    .pushNamedAndRemoveUntil('/dashboard', (route) => false);
   }
 
 // Handle Payment Failure
@@ -372,15 +374,58 @@ class _MeterDetectionScreenState extends State<MeterDetectionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    DateTime today = DateTime.now();
-    String todayDate = DateFormat('dd/MM/yyyy').format(today);
+    //DateTime today = DateTime.now();
+    //String todayDate = DateFormat('dd/MM/yyyy').format(today);
 
     // IF  BASED ON READING TAKEN TODAY
     // DateTime futureDate1 = today.add(Duration(days: 10));
     // String dueDate = DateFormat('dd/MM/yyyy').format(futureDate1);
     // DateTime futureDate2 = today.add(Duration(days: 15));
     // String disconnDate = DateFormat('dd/MM/yyyy').format(futureDate2);
-    return Scaffold(
+    return SafeArea(
+        child: WillPopScope(
+      onWillPop: () async {
+        // Show exit confirmation dialog
+        bool exit = await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            //backgroundColor: Colors.amber[50],
+            title: const Text("Exit"),
+            content: const Text(
+              'Are you sure you want to go back ? \nOnce you go your progress will be lost',
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  // Close the dialog and return true
+                  Navigator.of(context)
+                    .pushNamedAndRemoveUntil('/dashboard', (route) => false);
+                },
+                child: const Text(
+                  'Yes',
+                  style: TextStyle(
+                      color: Color(0xFF4D4C7D), fontWeight: FontWeight.bold),
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  // Close the dialog and return false
+                  Navigator.of(context).pop(false);
+                },
+                child: const Text(
+                  'No',
+                  style: TextStyle(
+                      color: Color(0xFFFD7250), fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ),
+        );
+
+        // Return exit if user confirmed, otherwise don't exit
+        return exit;
+      },
+      child: Scaffold(
         appBar: AppBar(
           actions: [
             IconButton(
@@ -736,14 +781,8 @@ class _MeterDetectionScreenState extends State<MeterDetectionScreen> {
                               ),
                               Buttons(
                                 fn: () {
-                                  if (allAmounts != null) {
-                                    _proceedToPay(allAmounts);
-                                  } else {
-                                    Fluttertoast.showToast(
-                                        msg:
-                                            "Bill details not available. Please wait.");
-                                  }
-                                },
+                                  _proceedToPay(allAmounts);
+                                                                },
                                 label: "Proceed To Pay",
                               ),
                             ],
@@ -756,7 +795,9 @@ class _MeterDetectionScreenState extends State<MeterDetectionScreen> {
               ),
             ),
           ),
-        ));
+        )
+      )
+    ));
   }
 }
 
