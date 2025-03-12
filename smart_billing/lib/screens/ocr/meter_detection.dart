@@ -34,7 +34,7 @@ class _MeterDetectionScreenState extends State<MeterDetectionScreen> {
   Timer? _timer; // Timer variable
   bool timeEnd = false;
   bool showButton = true;
-  int curr = 8909;
+  int curr = 8908;
 
   @override
   void initState() {
@@ -44,6 +44,24 @@ class _MeterDetectionScreenState extends State<MeterDetectionScreen> {
     //captureImage(); // Automatically open the camera
     fetchPreviousMonthData();
     getEmailnContact();
+    getCurr().then((cur) {
+      setState(() {
+        curr = cur;
+      });
+    });
+  }
+
+  Future<int> getCurr() async{
+    int curr = 0;
+    DocumentSnapshot doc = await FirebaseFirestore.instance
+      .collection('temp')
+      .doc('curr')
+      .get();
+
+    if (doc.exists) {
+      curr = doc['curr'];
+    }
+    return curr;
   }
 
   /// Start a 15-second countdown timer

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:smart_billing/model/generate_pdf.dart';
 import 'package:smart_billing/widgets/button.dart';
 import 'package:smart_billing/widgets/inputfield.dart';
 
@@ -15,6 +16,7 @@ class _BillHistoryState extends State<BillHistory> {
   String? consumerNumber;
   String? consumerName;
   String? consumerPhase;
+  String? pdfContent;
   List<Map<String, dynamic>> bills = [];
 
   @override
@@ -154,6 +156,7 @@ class _BillHistoryState extends State<BillHistory> {
 
 class BillDetailsPage extends StatelessWidget {
   final Map<String, dynamic> billData;
+  final PDFManager pdfManager = PDFManager();
 
   BillDetailsPage({super.key, required this.billData});
 
@@ -166,13 +169,13 @@ class BillDetailsPage extends StatelessWidget {
 
   final Map<String, String> fieldLabels = {
     'consumer no': 'Consumer Number', 'consumer name': 'Name',
-    'bill#': 'Bill Number', 'Bill date': 'Bill Date', 'due date': 'Due Date', 'Disconn dt': 'Disconnection Date',
-    'load': 'Load',  'consumer phase': 'Phase', 'prv rd dt': 'Previous Reading Date',
+    'bill#': 'Bill Number', 'bill date': 'Bill Date', 'due date': 'Due Date', 'disconn dt': 'Disconnection Date',
+    'load': 'Load', 'consumer phase': 'Phase', 'prv rd dt': 'Previous Reading Date',
     'prs rd date': 'Present Reading Date', 'unit': 'Unit', 'curr': 'Current Reading',
     'prev': 'Previous Reading', 'cons': 'Consumed Units',
     'Fixed Charge': 'Fixed Charge', 'Meter Rent': 'Meter Rent',
-    'Energy Charge': 'Energy Charge', 'Duty': 'Duty', 'FC Subsidy': 'FC Subsidy', 
-    'EC Subsidy': 'EC Subsidy','Monthly Fuel Surcharge':'Monthly Fuel Surcharge', 'total': 'Total Amount Payable'
+    'Energy Charge': 'Energy Charge', 'duty': 'Duty', 'FC Subsidy': 'FC Subsidy', 
+    'EC Subsidy': 'EC Subsidy', 'Monthly Fuel Surcharge': 'Monthly Fuel Surcharge', 'total': 'Total Amount Payable'
   };
 
   @override
@@ -187,19 +190,23 @@ class BillDetailsPage extends StatelessWidget {
             children: [
               Column(
                 children: fieldOrder.map((field) {
-              return billData.containsKey(field)
-                  ? InputField(
-                      label: fieldLabels[field]!,
-                      controller: TextEditingController(text: billData[field].toString()),
-                      isEnable: false,
-                    )
-                  : Container();
-            }).toList(),
+                  return billData.containsKey(field)
+                      ? InputField(
+                          label: fieldLabels[field]!,
+                          controller: TextEditingController(text: billData[field].toString()),
+                          isEnable: false,
+                        )
+                      : Container();
+                }).toList(),
               ),
-              const SizedBox(height: 10,),
-              Buttons(label: "view PDF", fn: (){})
-            ]
-            
+              const SizedBox(height: 10),
+              Buttons(
+                label: "View PDF",
+                fn: () async {
+                  await pdfManager.generateAndDownloadPDF("KSEB_Bill${billData['id']}.pdf", billData);
+                },
+              ),
+            ],
           ),
         ),
       ),
