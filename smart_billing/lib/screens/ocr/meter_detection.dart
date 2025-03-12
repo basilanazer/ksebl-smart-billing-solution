@@ -470,6 +470,7 @@ class _MeterDetectionScreenState extends State<MeterDetectionScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const SizedBox(height: 20),
+                    if(!timeEnd)
                     Text(_meterDetectionResult,
                         textAlign: TextAlign.center,
                         style: const TextStyle(
@@ -495,7 +496,7 @@ class _MeterDetectionScreenState extends State<MeterDetectionScreen> {
                     const SizedBox(height: 20),
                     if (showButton && !timeEnd)
                       Buttons(label: "Capture Meter Image", fn: captureImage),
-                    if (meterDetectedFlag) ...[
+                    if (meterDetectedFlag && !timeEnd) ...[
                       const SizedBox(
                         height: 20,
                       ),

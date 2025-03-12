@@ -164,7 +164,7 @@ class BillDetailsPage extends StatelessWidget {
     'consumer no', 'consumer name', 
     'bill#', 'bill date', 'due date', 'disconn dt', 'load', 'consumer phase',
     'prv rd dt', 'prs rd date', 'unit', 'curr', 'prev', 'cons',
-    'Fixed Charge', 'Meter Rent', 'Energy Charge', 'duty', 'FC Subsidy', 'EC Subsidy', 'total'
+    'Fixed Charge', 'Meter Rent', 'Energy Charge', 'duty', 'FC Subsidy', 'EC Subsidy','Monthly Fuel Surcharge', 'total'
   ];
 
   final Map<String, String> fieldLabels = {
@@ -203,7 +203,7 @@ class BillDetailsPage extends StatelessWidget {
               Buttons(
                 label: "View PDF",
                 fn: () async {
-                  await pdfManager.generateAndDownloadPDF("KSEB_Bill${billData['id']}.pdf", billData);
+                  await pdfManager.generateAndDownloadPDF(billData);
                 },
               ),
             ],

@@ -9,7 +9,7 @@ class PDFManager {
     'consumer no', 'consumer name', 
     'bill#', 'bill date', 'due date', 'disconn dt', 'load', 'consumer phase',
     'prv rd dt', 'prs rd date', 'unit', 'curr', 'prev', 'cons',
-    'Fixed Charge', 'Meter Rent', 'Energy Charge', 'duty', 'FC Subsidy', 'EC Subsidy', 'total'
+    'Fixed Charge', 'Meter Rent', 'Energy Charge', 'duty', 'FC Subsidy', 'EC Subsidy','Monthly Fuel Surcharge', 'total'
   ];
 
   final Map<String, String> fieldLabels = {
@@ -22,7 +22,7 @@ class PDFManager {
     'Energy Charge': 'Energy Charge', 'duty': 'Duty', 'FC Subsidy': 'FC Subsidy', 
     'EC Subsidy': 'EC Subsidy', 'Monthly Fuel Surcharge': 'Monthly Fuel Surcharge', 'total': 'Total Amount Payable'
   };
-  Future<void> generateAndDownloadPDF(String fileName, Map<String, dynamic> billData) async {
+  Future<void> generateAndDownloadPDF(Map<String, dynamic> billData) async {
     try {
       final PdfDocument document = PdfDocument();
       final PdfPage page = document.pages.add();
@@ -59,7 +59,7 @@ class PDFManager {
         throw Exception('Failed to get external storage directory');
       }
       final String path = directory.path;
-      final File file = File('$path/$fileName');
+      final File file = File('$path/bill_on_${billData['bill date']}.pdf');
       await file.writeAsBytes(bytes, flush: true);
 
       // Open the saved PDF file using open_file plugin
